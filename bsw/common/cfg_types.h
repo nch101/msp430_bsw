@@ -1,0 +1,54 @@
+#ifndef CFG_TYPES_H
+#define CFG_TYPES_H
+
+/******************************************* UART *******************************************/
+
+/**
+ * @brief UART parity enum configuration
+*/
+#define UART_SEL_EVEN_PARITY                0
+#define UART_SEL_ODD_PARITY                 1
+
+/**
+ * @brief UART direction of the receive and transmit shift register enum configuration
+*/
+#define UART_SEL_LSB_FIRST                  0
+#define UART_SEL_MSB_FIRST                  1
+
+/**
+ * @brief Character length
+*/
+#define UART_SEL_8BIT_DATA                  0
+#define UART_SEL_7BIT_DATA                  1
+
+/**
+ * @brief Number of stop bits 
+*/
+#define UART_SEL_1_STOP_BIT                 0
+#define UART_SEL_2_STOP_BIT                 1
+
+/**
+ * @brief USCI mode
+*/
+#define UART_SEL_UART_MODE                  0   /* UART mode */
+#define UART_SEL_ILDE_LINE_MULTI_MODE       1   /* Idle-line multiprocessor mode */
+#define UART_SEL_ADDRESS_BIT_MULTI_MODE     2   /* Address-bit multiprocessor mode */
+#define UART_SEL_AUTO_MODE                  3   /* UART mode with automatic baud rate detection */
+
+/**
+ * @brief Synchronous mode
+*/
+#define UART_SEL_ASYNC_MODE                 0   /* Asynchronous mode */
+#define UART_SEL_SYNC_MODE                  1   /* Synchronous mode */
+
+/**
+ * @brief USCI clock source
+ */
+#define UART_SEL_UCLK                       0   /* UCLK */
+#define UART_SEL_ACLK                       1   /* ACLK */
+#define UART_SEL_SMCLK                      2   /* SMCLK */
+
+/*********************************************************************************************/
+
+
+#endif  /* CFG_TYPES_H */

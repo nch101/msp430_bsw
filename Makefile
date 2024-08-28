@@ -27,12 +27,14 @@ LD              := msp430-elf-ld
 ############################ Source list ############################
 # C files list
 C_SOURCES_LIST  :=      \
-	main.c
+    bsw/driver/uart/src/uart.c
 
 ############################ Include list ############################
 # C include list
 C_INCLUDES_LIST :=      \
-
+    bsw/common          \
+    bsw/driver/uart/inc \
+    bsw/driver/uart/cfg \
 
 C_INCLUDES      := $(addprefix -I, $(C_INCLUDES_LIST))
 
