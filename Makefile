@@ -27,10 +27,10 @@ LD              := msp430-elf-ld
 ############################ Source list ############################
 # C files list
 C_SOURCES_LIST  :=      \
-    main.c              \
     bsw/drivers/gpt/src/gpt.c   \
     bsw/drivers/mcu/src/mcu.c   \
     bsw/drivers/uart/src/uart.c \
+    bsw/services/os/src/os.c    \
 
 ############################ Include list ############################
 # C include list
@@ -42,6 +42,8 @@ C_INCLUDES_LIST :=      \
     bsw/drivers/mcu/cfg \
     bsw/drivers/uart/inc \
     bsw/drivers/uart/cfg \
+    bsw/services/os/inc \
+    bsw/services/os/cfg \
 
 C_INCLUDES      := $(addprefix -I, $(C_INCLUDES_LIST))
 

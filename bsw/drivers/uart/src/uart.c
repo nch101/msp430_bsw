@@ -149,7 +149,7 @@ Std_StatusType UART_TransmitData(uint8 const * DataPtr, const uint8 Length)
  * @brief       UART initialize function
  * @retval      None
  */
-void UART_Init(void)
+void UART_InitFunction(void)
 {
     /* Set P1.1 = RXD, P1.2 = TXD */
     P1SEL   = BIT1 + BIT2;
