@@ -2,11 +2,7 @@
 #define UART_CFG_H
 
 #include "bsw_cfg.h"
-
-/**
- * @brief UART enable
- */
-#define UART_CFG_FUNCTION                   STD_ENABLED
+#include "mcu_cfg.h"
 
 /**
  * @brief UART Rx buffer length
@@ -16,9 +12,9 @@
 /**
  * @brief UART baudrate
  * @note  Only baudrates corresponding to the clock speed as shown below are supported
- *          9600        at  1MHz, 4MHz;
- *          19200       at  1MHz, 4MHz;
- *          115200      at  4MHz;
+ *          9600        at  1MHz, 8MHz;
+ *          19200       at  1MHz, 8MHz;
+ *          115200      at  8MHz, 12Mhz;
  */
 #define UART_CFG_BAUDRATE                   9600
 
@@ -101,39 +97,43 @@
 
 #if (UART_CFG_BAUDRATE == 9600)
     #define UART_CFG_MAX_DATA_TRANSFER              1U
-    #if (CLOCK_CFG_CLOCK_RATE == 1000000)
+    #if (MCU_CFG_CLOCK_RATE == CLK_SEL_1MHZ)
         #define UART_CFG_UCBR0_REG                  104U
         #define UART_CFG_UCBR1_REG                  0U
         #define UART_CFG_UCBRSx_REG                 (1U << 1U)
-    #elif (CLOCK_CFG_CLOCK_RATE == 4000000)
+    #elif (MCU_CFG_CLOCK_RATE == CLK_SEL_8MHZ)
+        #define UART_CFG_UCBR0_REG                  65U
+        #define UART_CFG_UCBR1_REG                  3U
+        #define UART_CFG_UCBRSx_REG                 (2U << 1U)
+    #else
+        #error "Current UART baudrate is not supported for current clock rate"
+    #endif /* (MCU_CFG_CLOCK_RATE == CLK_SEL_1MHZ) */
+#elif (UART_CFG_BAUDRATE == 19200)
+    #define UART_CFG_MAX_DATA_TRANSFER              2U
+    #if (MCU_CFG_CLOCK_RATE == CLK_SEL_1MHZ)
+        #define UART_CFG_UCBR0_REG                  52U
+        #define UART_CFG_UCBR1_REG                  0U
+        #define UART_CFG_UCBRSx_REG                 (0U << 1U)
+    #elif (MCU_CFG_CLOCK_RATE == CLK_SEL_8MHZ)
         #define UART_CFG_UCBR0_REG                  160U
         #define UART_CFG_UCBR1_REG                  1U
         #define UART_CFG_UCBRSx_REG                 (6U << 1U)
     #else
         #error "Current UART baudrate is not supported for current clock rate"
-    #endif /* (CLOCK_CFG_CLOCK_RATE == 1000000) */
-#elif (UART_CFG_BAUDRATE == 19200)
-    #define UART_CFG_MAX_DATA_TRANSFER              2U
-    #if (CLOCK_CFG_CLOCK_RATE == 1000000)
-        #define UART_CFG_UCBR0_REG                  52U
-        #define UART_CFG_UCBR1_REG                  0U
-        #define UART_CFG_UCBRSx_REG                 (0U << 1U)
-    #elif (CLOCK_CFG_CLOCK_RATE == 4000000)
-        #define UART_CFG_UCBR0_REG                  208U
-        #define UART_CFG_UCBR1_REG                  0U
-        #define UART_CFG_UCBRSx_REG                 (3U << 1U)
-    #else
-        #error "Current UART baudrate is not supported for current clock rate"
-    #endif /* (CLOCK_CFG_CLOCK_RATE == 1000000) */
+    #endif /* (MCU_CFG_CLOCK_RATE == CLK_SEL_1MHZ) */
 #elif (UART_CFG_BAUDRATE == 115200)
     #define UART_CFG_MAX_DATA_TRANSFER              1U
-    #if (CLOCK_CFG_CLOCK_RATE == 4000000)
-        #define UART_CFG_UCBR0_REG                  34U
+    #if (MCU_CFG_CLOCK_RATE == CLK_SEL_8MHZ)
+        #define UART_CFG_UCBR0_REG                  69U
         #define UART_CFG_UCBR1_REG                  0U
-        #define UART_CFG_UCBRSx_REG                 (6U << 1U)
+        #define UART_CFG_UCBRSx_REG                 (4U << 1U)
+    #elif (MCU_CFG_CLOCK_RATE == CLK_SEL_12MHZ)
+        #define UART_CFG_UCBR0_REG                  104U
+        #define UART_CFG_UCBR1_REG                  0U
+        #define UART_CFG_UCBRSx_REG                 (1U << 1U)
     #else
         #error "Current UART baudrate is not supported for current clock rate"
-    #endif /* (CLOCK_CFG_CLOCK_RATE == 1000000) */
+    #endif /* (MCU_CFG_CLOCK_RATE == CLK_SEL_8MHZ) */
 #else
     #error "Current UART baudrate is not supported"
 #endif

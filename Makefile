@@ -27,12 +27,15 @@ LD              := msp430-elf-ld
 ############################ Source list ############################
 # C files list
 C_SOURCES_LIST  :=      \
-    bsw/driver/uart/src/uart.c
+    bsw/driver/mcu/src/mcu.c   \
+    bsw/driver/uart/src/uart.c \
 
 ############################ Include list ############################
 # C include list
 C_INCLUDES_LIST :=      \
     bsw/common          \
+    bsw/driver/mcu/inc  \
+    bsw/driver/mcu/cfg  \
     bsw/driver/uart/inc \
     bsw/driver/uart/cfg \
 

@@ -6,12 +6,9 @@
 #include "cfg_types.h"
 
 /**
- * @brief Clock rate 
-*/
-#define CLOCK_CFG_CLOCK_RATE                1000000
-
-
-
+ * @brief UART enable
+ */
+#define UART_CFG_FUNCTION                   STD_ENABLED
 
 
 #endif /* BSW_CFG_H */

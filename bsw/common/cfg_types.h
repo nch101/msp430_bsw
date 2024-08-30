@@ -1,6 +1,16 @@
 #ifndef CFG_TYPES_H
 #define CFG_TYPES_H
 
+/****************************************** Clock *******************************************/
+
+/**
+ * @brief Clock enum configuration
+*/
+#define CLK_SEL_1MHZ                        0
+#define CLK_SEL_8MHZ                        1
+#define CLK_SEL_12MHZ                       2
+#define CLK_SEL_16MHZ                       3
+
 /******************************************* UART *******************************************/
 
 /**
