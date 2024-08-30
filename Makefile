@@ -28,20 +28,20 @@ LD              := msp430-elf-ld
 # C files list
 C_SOURCES_LIST  :=      \
     main.c              \
-    bsw/driver/gpt/src/gpt.c    \
-    bsw/driver/mcu/src/mcu.c    \
-    bsw/driver/uart/src/uart.c  \
+    bsw/drivers/gpt/src/gpt.c   \
+    bsw/drivers/mcu/src/mcu.c   \
+    bsw/drivers/uart/src/uart.c \
 
 ############################ Include list ############################
 # C include list
 C_INCLUDES_LIST :=      \
     bsw/common          \
-    bsw/driver/gpt/inc  \
-    bsw/driver/gpt/cfg  \
-    bsw/driver/mcu/inc  \
-    bsw/driver/mcu/cfg  \
-    bsw/driver/uart/inc \
-    bsw/driver/uart/cfg \
+    bsw/drivers/gpt/inc \
+    bsw/drivers/gpt/cfg \
+    bsw/drivers/mcu/inc \
+    bsw/drivers/mcu/cfg \
+    bsw/drivers/uart/inc \
+    bsw/drivers/uart/cfg \
 
 C_INCLUDES      := $(addprefix -I, $(C_INCLUDES_LIST))
 
