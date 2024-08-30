@@ -27,13 +27,17 @@ LD              := msp430-elf-ld
 ############################ Source list ############################
 # C files list
 C_SOURCES_LIST  :=      \
-    bsw/driver/mcu/src/mcu.c   \
-    bsw/driver/uart/src/uart.c \
+    main.c              \
+    bsw/driver/gpt/src/gpt.c    \
+    bsw/driver/mcu/src/mcu.c    \
+    bsw/driver/uart/src/uart.c  \
 
 ############################ Include list ############################
 # C include list
 C_INCLUDES_LIST :=      \
     bsw/common          \
+    bsw/driver/gpt/inc  \
+    bsw/driver/gpt/cfg  \
     bsw/driver/mcu/inc  \
     bsw/driver/mcu/cfg  \
     bsw/driver/uart/inc \
@@ -81,14 +85,11 @@ all:
 build: build/$(TARGET_NAME).out
 
 build/%.o: %.c
-	@echo ============================================
-	@echo Creating build folder ...
 	@mkdir -p build
 	@echo Compiling $< ...
 	$(CC) $(INCLUDES) $(CFLAGS) -c $< -o $@
 
 build/$(TARGET_NAME).out: $(C_OBJECTS)
-	@echo ============================================
 	@echo Linking objects and generating output binary ...
 	$(CC) $(LDFLAGS) $(C_OBJECTS) -o $@
 

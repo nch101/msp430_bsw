@@ -1,6 +1,30 @@
 #ifndef CFG_TYPES_H
 #define CFG_TYPES_H
 
+
+/****************************************** GPT *******************************************/
+
+/**
+ * @brief GPT timer clock source enum configuration
+*/
+#define GPT_SEL_TACLK                       0
+#define GPT_SEL_ACLK                        1
+#define GPT_SEL_SMCLK                       2
+
+/**
+ * @brief GPT timer mode enum configuration
+*/
+#define GPT_SEL_STOP_MODE                   0
+#define GPT_SEL_UP_MODE                     1
+#define GPT_SEL_CON_MODE                    2
+#define GPT_SEL_UP_DOWN_MODE                3
+
+/**
+ * @brief GPT trigger time enum configuration
+*/
+#define GPT_SEL_TRIGGER_0_5MS               0
+#define GPT_SEL_TRIGGER_1MS                 1
+
 /****************************************** Clock *******************************************/
 
 /**
