@@ -46,6 +46,7 @@ static void OS_InitFunction(void)
     MCU_InitClock();
     GPT_InitFunction();
     UART_InitFunction();
+    GPIO_InitFunction();
 }
 
 /**

@@ -27,6 +27,7 @@ LD              := msp430-elf-ld
 ############################ Source list ############################
 # C files list
 C_SOURCES_LIST  :=      \
+    bsw/drivers/gpio/src/gpio.c \
     bsw/drivers/gpt/src/gpt.c   \
     bsw/drivers/mcu/src/mcu.c   \
     bsw/drivers/uart/src/uart.c \
@@ -34,16 +35,18 @@ C_SOURCES_LIST  :=      \
 
 ############################ Include list ############################
 # C include list
-C_INCLUDES_LIST :=      \
-    bsw/common          \
-    bsw/drivers/gpt/inc \
-    bsw/drivers/gpt/cfg \
-    bsw/drivers/mcu/inc \
-    bsw/drivers/mcu/cfg \
-    bsw/drivers/uart/inc \
-    bsw/drivers/uart/cfg \
-    bsw/services/os/inc \
-    bsw/services/os/cfg \
+C_INCLUDES_LIST :=          \
+    bsw/common              \
+    bsw/drivers/gpio/inc    \
+    bsw/drivers/gpio/cfg    \
+    bsw/drivers/gpt/inc     \
+    bsw/drivers/gpt/cfg     \
+    bsw/drivers/mcu/inc     \
+    bsw/drivers/mcu/cfg     \
+    bsw/drivers/uart/inc    \
+    bsw/drivers/uart/cfg    \
+    bsw/services/os/inc     \
+    bsw/services/os/cfg     \
 
 C_INCLUDES      := $(addprefix -I, $(C_INCLUDES_LIST))
 
@@ -65,7 +68,7 @@ LIB_FILES       :=
 
 ############################### Flags ###############################
 # C flags
-CFLAGS          := -Os -D__$(DEVICE)__ -mmcu=$(DEVICE) -g -ffunction-sections -fdata-sections -DDEPRECATED
+CFLAGS          := -Os -D__$(DEVICE)__ -mmcu=$(DEVICE) -g -ffunction-sections -fdata-sections -DDEPRECATED -Wall
 
 # LD flags
 LDFLAGS         := -T$(LD_FILES) -L$(GCC_MSP_INC_DIR) $(LIB_FILES) -mmcu=$(DEVICE) -g -Wl,--gc-sections -Wl,-Map=build/$(TARGET_NAME).map

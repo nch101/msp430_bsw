@@ -225,9 +225,9 @@
 /**
  * @brief USCI_A0 Control 1 Register
  */
-#define UART_CFG_UCA0CTL1_REG                   UART_CFG_CLK_SRC_REG | \
-                                                UART_CFG_RX_ERROR_ISR_REG | \
-                                                UART_CFG_RX_BREAK_ISR_REG & \
-                                                ~UCSWRST
+#define UART_CFG_UCA0CTL1_REG                   (((UART_CFG_CLK_SRC_REG | \
+                                                UART_CFG_RX_ERROR_ISR_REG) | \
+                                                UART_CFG_RX_BREAK_ISR_REG) & \
+                                                ~UCSWRST)
 
 #endif /* UART_CFG_H */
