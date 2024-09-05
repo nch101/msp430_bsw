@@ -166,7 +166,6 @@ void UART_InitFunction(void)
 
     /* Enable USCI_A0 RX interrupt */
     IE2 |= UCA0RXIE;
-    __bis_SR_register(LPM0_bits + GIE);
 
     Uart_gRxBuffInf = (Uart_UartRxBuff_St) {Uart_gRxBuff, 0U, UART_BUFFER_EMPTY};
 }

@@ -13,6 +13,10 @@
 */
 #define MCU_CFG_CLOCK_RATE                  CLK_SEL_8MHZ
 
+#define MCU_CFG_INIT_OPERATING_POWER_MODE   0x00U;
+
+#define MCU_CFG_OPERATING_MODE_API          STD_DISABLED
+
 #if (MCU_CFG_CLOCK_RATE == CLK_SEL_1MHZ)
     #define MCU_CFG_DCOCTL_REG              CALDCO_1MHZ
     #define MCU_CFG_BCSCTL1_REG             CALBC1_1MHZ

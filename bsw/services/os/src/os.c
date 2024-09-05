@@ -45,10 +45,12 @@ static void OS_InitFunction(void)
 
     MCU_InitClock();
     GPT_InitFunction();
+    MCU_InitOperatingMode();
     UART_InitFunction();
     GPIO_InitFunction();
 }
 
+#if (OS_CFG_IDLE_TASK == STD_ENABLED)
 /**
  * @brief       
  * @retval      None
@@ -58,9 +60,9 @@ static void OS_IdleTask(void)
     /* Do nothing */
     _no_operation();
 }
+#endif /* (OS_CFG_IDLE_TASK == STD_ENABLED) */
 
 #if (OS_CFG_BACKGROUND_TASK == STD_ENABLED)
-
 /**
  * @brief       
  * @retval      None
