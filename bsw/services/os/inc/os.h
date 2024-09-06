@@ -6,6 +6,7 @@
 #include "mcu.h"
 #include "uart.h"
 #include "gpio.h"
+#include "wdt.h"
 
 #define OS_MainFunction()                   int main(void)
 

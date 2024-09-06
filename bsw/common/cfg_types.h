@@ -1,6 +1,20 @@
 #ifndef CFG_TYPES_H
 #define CFG_TYPES_H
 
+/**************************************** Watchdog timer *************************************/
+/**
+ * @brief WDT timeout enum configuration
+*/
+#define WDT_SEL_0_5MS_TIMEOUT               0
+#define WDT_SEL_4MS_TIMEOUT                 1
+#define WDT_SEL_8MS_TIMEOUT                 2
+#define WDT_SEL_32MS_TIMEOUT                3
+
+/**
+ * @brief WDT clock source enum configuration
+*/
+#define WDT_SEL_SMCLK                       0
+#define WDT_SEL_ACLK                        1
 
 /****************************************** GPT *******************************************/
 

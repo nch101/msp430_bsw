@@ -31,6 +31,7 @@ C_SOURCES_LIST  :=      \
     bsw/drivers/gpt/src/gpt.c   \
     bsw/drivers/mcu/src/mcu.c   \
     bsw/drivers/uart/src/uart.c \
+    bsw/drivers/wdt/src/wdt.c   \
     bsw/services/os/src/os.c    \
 
 ############################ Include list ############################
@@ -45,6 +46,8 @@ C_INCLUDES_LIST :=          \
     bsw/drivers/mcu/cfg     \
     bsw/drivers/uart/inc    \
     bsw/drivers/uart/cfg    \
+    bsw/drivers/wdt/inc     \
+    bsw/drivers/wdt/cfg     \
     bsw/services/os/inc     \
     bsw/services/os/cfg     \
 

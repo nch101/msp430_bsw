@@ -43,11 +43,13 @@ static void OS_InitFunction(void)
 {
     OS_InitTimerTicks();
 
+    WDT_SuspendWatchdogTimer();
     MCU_InitClock();
     GPT_InitFunction();
     MCU_InitOperatingMode();
     UART_InitFunction();
     GPIO_InitFunction();
+    WDT_StartWatchdogTimer();
 }
 
 #if (OS_CFG_IDLE_TASK == STD_ENABLED)
@@ -175,6 +177,8 @@ OS_MainFunction()
 
     while (1U)
     {
+        WDT_ClearWatchdogTimer();
+
 #if (OS_CFG_BACKGROUND_TASK == STD_ENABLED)
         OS_BackgroundTask();
 #endif /* (OS_CFG_BACKGROUND_TASK == STD_ENABLED) */
