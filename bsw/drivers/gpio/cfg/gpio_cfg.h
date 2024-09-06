@@ -4,6 +4,11 @@
 #include "bsw_cfg.h"
 
 /**
+ * @brief 
+ */
+#define GPIO_CFG_INTERRUPT_FUNCTION         STD_DISABLED
+
+/**
  * @brief Max number of callback function to handle ISR in port 1
  */
 #define GPIO_CFG_MAX_CALLBACK_FUNC1         2U

@@ -1,11 +1,13 @@
 #include <string.h>
 #include "gpio.h"
 
+#if (GPIO_CFG_INTERRUPT_FUNCTION == STD_ENABLED)
 static Gpio_HandleISRFunc_St Gpio_gCallBackFuncPort1[GPIO_CFG_MAX_CALLBACK_FUNC1];
 static Gpio_HandleISRFunc_St Gpio_gCallBackFuncPort2[GPIO_CFG_MAX_CALLBACK_FUNC2];
 
 static uint8 Gpio_gCallbackFuncPort1Idx;
 static uint8 Gpio_gCallbackFuncPort2Idx;
+#endif /* (GPIO_CFG_INTERRUPT_FUNCTION == STD_ENABLED) */
 
 /**
  * @brief       Get GPIO register by group ID
@@ -24,8 +26,12 @@ static volatile Gpio_GpioReg_St* GPIO_GetGPIOReg(uint8 group)
             pReg->outputReg   = (uint8 *) &P1OUT;
             pReg->dirReg      = (uint8 *) &P1DIR;
             pReg->resistorReg = (uint8 *) &P1REN;
+
+#if (GPIO_CFG_INTERRUPT_FUNCTION == STD_ENABLED)
             pReg->interruptEdgeReg   = (uint8 *) &P1IES;
             pReg->interruptEnableReg = (uint8 *) &P1IE;
+#endif /* (GPIO_CFG_INTERRUPT_FUNCTION == STD_ENABLED) */
+
             break;
         }
 
@@ -35,8 +41,12 @@ static volatile Gpio_GpioReg_St* GPIO_GetGPIOReg(uint8 group)
             pReg->outputReg   = (uint8 *) &P2OUT;
             pReg->dirReg      = (uint8 *) &P2DIR;
             pReg->resistorReg = (uint8 *) &P2REN;
+
+#if (GPIO_CFG_INTERRUPT_FUNCTION == STD_ENABLED)
             pReg->interruptEdgeReg   = (uint8 *) &P2IES;
             pReg->interruptEnableReg = (uint8 *) &P2IE;
+#endif /* (GPIO_CFG_INTERRUPT_FUNCTION == STD_ENABLED) */
+
             break;
         }
 
@@ -99,6 +109,7 @@ void GPIO_ConfigPort(Gpio_GpioCfg_St* pGpioCfg)
         *(pReg)->resistorReg &= ~(pGpioCfg->pin);
     }
 
+#if (GPIO_CFG_INTERRUPT_FUNCTION == STD_ENABLED)
     /* Config interrupt */
     if ((pGpioCfg->group == 1U) \
         || (pGpioCfg->group == 2U))
@@ -142,6 +153,8 @@ void GPIO_ConfigPort(Gpio_GpioCfg_St* pGpioCfg)
     {
         /* Hardware does not support. Do nothing */
     }
+#endif /* (GPIO_CFG_INTERRUPT_FUNCTION == STD_ENABLED) */
+
 }
 
 /**
@@ -188,13 +201,18 @@ Gpio_Level GPIO_ReadPort(Gpio_GpioCfg_St* pGpioCfg)
  */
 void GPIO_InitFunction(void)
 {
+
+#if (GPIO_CFG_INTERRUPT_FUNCTION == STD_ENABLED)
     Gpio_gCallbackFuncPort1Idx = 0U;
     Gpio_gCallbackFuncPort2Idx = 0U;
 
     (void)memset(Gpio_gCallBackFuncPort1, 0, sizeof(Gpio_HandleISRFunc_St) * GPIO_CFG_MAX_CALLBACK_FUNC1);
     (void)memset(Gpio_gCallBackFuncPort2, 0, sizeof(Gpio_HandleISRFunc_St) * GPIO_CFG_MAX_CALLBACK_FUNC2);
+#endif /* (GPIO_CFG_INTERRUPT_FUNCTION == STD_ENABLED) */
+
 }
 
+#if (GPIO_CFG_INTERRUPT_FUNCTION == STD_ENABLED)
 /**
  * @brief       
  * @retval      None
@@ -248,3 +266,4 @@ void __attribute__ ((interrupt(PORT2_VECTOR))) PORT2_ISR (void)
 {
     GPIO_HandlerPort2ISR(&P2IFG);
 }
+#endif /* (GPIO_CFG_INTERRUPT_FUNCTION == STD_ENABLED) */

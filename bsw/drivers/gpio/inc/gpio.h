@@ -41,8 +41,12 @@ typedef struct
     uint8 *outputReg;
     uint8 *dirReg;
     uint8 *resistorReg;
+
+#if (GPIO_CFG_INTERRUPT_FUNCTION == STD_ENABLED)
     uint8 *interruptEdgeReg;
     uint8 *interruptEnableReg;
+#endif /* (GPIO_CFG_INTERRUPT_FUNCTION == STD_ENABLED) */
+
 } Gpio_GpioReg_St;
 
 typedef struct
@@ -51,8 +55,12 @@ typedef struct
     volatile Gpio_GpioReg_St    *reg;                   /* Register */
     Gpio_PullMode               pull;                   /* Pull mode */
     Gpio_Direction              direction;              /* Port direction */
+
+#if (GPIO_CFG_INTERRUPT_FUNCTION == STD_ENABLED)
     Gpio_InterruptEn            interrupt;              /* Interrupt  */
     Gpio_InterruptEdge          edge;                   /* Interrupt edge */
+#endif /* (GPIO_CFG_INTERRUPT_FUNCTION == STD_ENABLED) */
+
     uint8                       pin;                    /* Pin ID */
     uint8                       group;                  /* Group ID */
 } Gpio_GpioCfg_St;
@@ -66,8 +74,11 @@ typedef struct
 #define GPIO_PIN_6                          0x40U
 #define GPIO_PIN_7                          0x80U
 
+#if (GPIO_CFG_INTERRUPT_FUNCTION == STD_ENABLED)
 extern void GPIO_HandlerPort1ISR(volatile uint8* interruptFlag);
 extern void GPIO_HandlerPort2ISR(volatile uint8* interruptFlag);
+#endif /* (GPIO_CFG_INTERRUPT_FUNCTION == STD_ENABLED) */
+
 extern void GPIO_ConfigPort(Gpio_GpioCfg_St* pGpioCfg);
 extern void GPIO_TogglePort(Gpio_GpioCfg_St* pGpioCfg);
 extern void GPIO_SetPort(Gpio_GpioCfg_St* pGpioCfg, Gpio_Level level);
