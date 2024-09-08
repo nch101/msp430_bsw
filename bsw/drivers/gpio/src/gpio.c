@@ -14,22 +14,22 @@ static uint8 Gpio_gCallbackFuncPort2Idx;
  * @param[in]   group   Group ID
  * @retval      Gpio_GpioReg_St
  */
-static volatile Gpio_GpioReg_St* GPIO_GetGPIOReg(uint8 group)
+static Gpio_GpioReg_St GPIO_GetGPIOReg(uint8 group)
 {
-    volatile Gpio_GpioReg_St* pReg = 0U;
+    volatile Gpio_GpioReg_St reg = {0};
 
     switch (group)
     {
         case 1U:
         {
-            pReg->inputReg    = (uint8 *) &P1IN;
-            pReg->outputReg   = (uint8 *) &P1OUT;
-            pReg->dirReg      = (uint8 *) &P1DIR;
-            pReg->resistorReg = (uint8 *) &P1REN;
+            reg.dirReg      = (uint8 *) &P1IN;
+            reg.outputReg   = (uint8 *) &P1OUT;
+            reg.dirReg      = (uint8 *) &P1DIR;
+            reg.resistorReg = (uint8 *) &P1REN;
 
 #if (GPIO_CFG_INTERRUPT_FUNCTION == STD_ENABLED)
-            pReg->interruptEdgeReg   = (uint8 *) &P1IES;
-            pReg->interruptEnableReg = (uint8 *) &P1IE;
+            reg.interruptEdgeReg   = (uint8 *) &P1IES;
+            reg.interruptEnableReg = (uint8 *) &P1IE;
 #endif /* (GPIO_CFG_INTERRUPT_FUNCTION == STD_ENABLED) */
 
             break;
@@ -37,14 +37,14 @@ static volatile Gpio_GpioReg_St* GPIO_GetGPIOReg(uint8 group)
 
         case 2U:
         {
-            pReg->inputReg    = (uint8 *) &P2IN;
-            pReg->outputReg   = (uint8 *) &P2OUT;
-            pReg->dirReg      = (uint8 *) &P2DIR;
-            pReg->resistorReg = (uint8 *) &P2REN;
+            reg.inputReg    = (uint8 *) &P2IN;
+            reg.outputReg   = (uint8 *) &P2OUT;
+            reg.dirReg      = (uint8 *) &P2DIR;
+            reg.resistorReg = (uint8 *) &P2REN;
 
 #if (GPIO_CFG_INTERRUPT_FUNCTION == STD_ENABLED)
-            pReg->interruptEdgeReg   = (uint8 *) &P2IES;
-            pReg->interruptEnableReg = (uint8 *) &P2IE;
+            reg.interruptEdgeReg   = (uint8 *) &P2IES;
+            reg.interruptEnableReg = (uint8 *) &P2IE;
 #endif /* (GPIO_CFG_INTERRUPT_FUNCTION == STD_ENABLED) */
 
             break;
@@ -52,10 +52,10 @@ static volatile Gpio_GpioReg_St* GPIO_GetGPIOReg(uint8 group)
 
         case 3U:
         {
-            pReg->inputReg    = (uint8 *) &P3IN;
-            pReg->outputReg   = (uint8 *) &P3OUT;
-            pReg->dirReg      = (uint8 *) &P3DIR;
-            pReg->resistorReg = (uint8 *) &P3REN;
+            reg.inputReg    = (uint8 *) &P3IN;
+            reg.outputReg   = (uint8 *) &P3OUT;
+            reg.dirReg      = (uint8 *) &P3DIR;
+            reg.resistorReg = (uint8 *) &P3REN;
 
             break;
         }
@@ -67,7 +67,7 @@ static volatile Gpio_GpioReg_St* GPIO_GetGPIOReg(uint8 group)
         }
     }
 
-    return pReg;
+    return reg;
 }
 
 /**
@@ -77,37 +77,35 @@ static volatile Gpio_GpioReg_St* GPIO_GetGPIOReg(uint8 group)
  */
 void GPIO_ConfigPort(Gpio_GpioCfg_St* pGpioCfg)
 {
-    volatile Gpio_GpioReg_St* pReg;
-
-    pReg = GPIO_GetGPIOReg(pGpioCfg->group);
-
-    pGpioCfg->reg = pReg;
+    pGpioCfg->reg = GPIO_GetGPIOReg(pGpioCfg->group);
 
     /* Config direction */
     if (pGpioCfg->direction == GPIO_INPUT)
     {
-        *(pReg)->dirReg &= ~(pGpioCfg->pin);
+        *(pGpioCfg->reg.dirReg) &= ~(pGpioCfg->pin);
+
+        /* Config pull mode */
+        if ((pGpioCfg->pull) == GPIO_PULL_UP)
+        {
+            *(pGpioCfg->reg.resistorReg) |= pGpioCfg->pin;
+            *(pGpioCfg->reg.outputReg)   |= pGpioCfg->pin;
+        }
+        else if ((pGpioCfg->pull) == GPIO_PULL_DOWN)
+        {
+            *(pGpioCfg->reg.resistorReg) |= pGpioCfg->pin;
+            *(pGpioCfg->reg.outputReg)   &= ~(pGpioCfg->pin);
+        }
+        else
+        {
+            *(pGpioCfg->reg.resistorReg) &= ~(pGpioCfg->pin);
+        }
     }
     else
     {
-        *(pReg)->dirReg |= pGpioCfg->pin;
+        /* Pin works as an output */
+        *(pGpioCfg->reg.dirReg) |= pGpioCfg->pin;
     }
 
-    /* Config pull mode */
-    if ((pGpioCfg->pull) == GPIO_PULL_UP)
-    {
-        *(pReg)->resistorReg |= pGpioCfg->pin;
-        *(pReg)->outputReg   |= pGpioCfg->pin;
-    }
-    else if ((pGpioCfg->pull) == GPIO_PULL_DOWN)
-    {
-        *(pReg)->resistorReg |= pGpioCfg->pin;
-        *(pReg)->outputReg   &= ~(pGpioCfg->pin);
-    }
-    else
-    {
-        *(pReg)->resistorReg &= ~(pGpioCfg->pin);
-    }
 
 #if (GPIO_CFG_INTERRUPT_FUNCTION == STD_ENABLED)
     /* Config interrupt */
@@ -117,7 +115,7 @@ void GPIO_ConfigPort(Gpio_GpioCfg_St* pGpioCfg)
         if (pGpioCfg->interrupt == GPIO_ENABLE_INTERRUPT)
         {
             /* Set corresponding port to 1 */
-            *(pReg)->interruptEnableReg |= pGpioCfg->pin;
+            *(pGpioCfg->reg.interruptEnableReg) |= pGpioCfg->pin;
 
             if (pGpioCfg->group == 1U)
             {
@@ -135,18 +133,18 @@ void GPIO_ConfigPort(Gpio_GpioCfg_St* pGpioCfg)
             if (pGpioCfg->edge == GPIO_HIGH_TO_LOW)
             {
                 /* Set corresponding port to 1 */
-                *(pReg)->interruptEdgeReg |= pGpioCfg->pin;
+                *(pGpioCfg->reg.interruptEdgeReg) |= pGpioCfg->pin;
             }
             else
             {
                 /* Reset corresponding port to 0 */
-                *(pReg)->interruptEdgeReg &= ~(pGpioCfg->pin);
+                *(pGpioCfg->reg.interruptEdgeReg) &= ~(pGpioCfg->pin);
             }
         }
         else
         {
             /* Reset corresponding port to 0 */
-            *(pReg)->interruptEnableReg &= ~(pGpioCfg->pin);
+            *(pGpioCfg->reg.interruptEnableReg) &= ~(pGpioCfg->pin);
         }
     }
     else
@@ -164,7 +162,7 @@ void GPIO_ConfigPort(Gpio_GpioCfg_St* pGpioCfg)
  */
 void GPIO_TogglePort(Gpio_GpioCfg_St* pGpioCfg)
 {
-    *(pGpioCfg->reg)->outputReg ^= pGpioCfg->pin;
+    *(pGpioCfg->reg.outputReg) ^= pGpioCfg->pin;
 }
 
 /**
@@ -177,11 +175,11 @@ void GPIO_SetPort(Gpio_GpioCfg_St* pGpioCfg, Gpio_Level level)
 {
     if (level == GPIO_HIGH)
     {
-        *(pGpioCfg->reg)->outputReg |= pGpioCfg->pin;
+        *(pGpioCfg->reg.outputReg) |= pGpioCfg->pin;
     }
     else
     {
-        *(pGpioCfg->reg)->outputReg &= ~(pGpioCfg->pin);
+        *(pGpioCfg->reg.outputReg) &= ~(pGpioCfg->pin);
     }
 }
 
@@ -192,7 +190,7 @@ void GPIO_SetPort(Gpio_GpioCfg_St* pGpioCfg, Gpio_Level level)
  */
 Gpio_Level GPIO_ReadPort(Gpio_GpioCfg_St* pGpioCfg)
 {
-    return (*(pGpioCfg->reg)->inputReg & pGpioCfg->pin) ? GPIO_HIGH : GPIO_LOW;
+    return (*(pGpioCfg->reg.inputReg) & pGpioCfg->pin) ? GPIO_HIGH : GPIO_LOW;
 }
 
 /**
@@ -201,6 +199,15 @@ Gpio_Level GPIO_ReadPort(Gpio_GpioCfg_St* pGpioCfg)
  */
 void GPIO_InitFunction(void)
 {
+    /* Initializing all ports to eliminate wasted current consumption on unused pins */
+    P1DIR   = 0xFF;
+    P1OUT   = 0x00;
+
+    P2DIR   = 0xFF;
+    P2OUT   = 0x00;
+
+    P3DIR   = 0xFF;
+    P3OUT   = 0x00;
 
 #if (GPIO_CFG_INTERRUPT_FUNCTION == STD_ENABLED)
     Gpio_gCallbackFuncPort1Idx = 0U;

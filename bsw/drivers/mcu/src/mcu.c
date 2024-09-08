@@ -1,7 +1,10 @@
 #include "mcu.h"
 
 
+#if (MCU_CFG_OPERATING_MODE_API == STD_ENABLED)
 static uint8 MCU_gOperatingMode;
+#endif /* (MCU_CFG_OPERATING_MODE_API == STD_ENABLED) */
+
 
 /**
  * @brief       Clock initialization function
@@ -86,6 +89,12 @@ uint8 MCU_GetOperatingMode(void)
  */
 void MCU_InitOperatingMode(void)
 {
+
+#if (MCU_CFG_OPERATING_MODE_API == STD_ENABLED)
     MCU_gOperatingMode = MCU_CFG_INIT_OPERATING_POWER_MODE;
     __bis_SR_register(MCU_gOperatingMode + GIE);
+#else
+    __bis_SR_register(MCU_CFG_INIT_OPERATING_POWER_MODE + GIE);
+#endif /* (MCU_CFG_OPERATING_MODE_API == STD_ENABLED) */
+
 }

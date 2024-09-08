@@ -6,21 +6,21 @@
 
 typedef enum __attribute__((packed))
 {
+    GPIO_OUTPUT             = 0U,
     GPIO_INPUT,
-    GPIO_OUTPUT,
 } Gpio_Direction;
 
 typedef enum __attribute__((packed))
 {
+    GPIO_PULL_OFF           = 0U,
     GPIO_PULL_UP,
     GPIO_PULL_DOWN,
-    GPIO_PULL_OFF,
 } Gpio_PullMode;
 
 typedef enum __attribute__((packed))
 {
+    GPIO_DISABLE_INTERRUPT  = 0U,
     GPIO_ENABLE_INTERRUPT,
-    GPIO_DISABLE_INTERRUPT,
 } Gpio_InterruptEn;
 
 typedef enum __attribute__((packed))
@@ -31,7 +31,7 @@ typedef enum __attribute__((packed))
 
 typedef enum __attribute__((packed))
 {
-    GPIO_LOW,
+    GPIO_LOW                = 0U,
     GPIO_HIGH,
 } Gpio_Level;
 
@@ -51,12 +51,12 @@ typedef struct
 
 typedef struct
 {
-    void                        (*cb_func)(void);       /* Callback function when interrupt happends */
-    volatile Gpio_GpioReg_St    *reg;                   /* Register */
+    volatile Gpio_GpioReg_St    reg;                    /* Register */
     Gpio_PullMode               pull;                   /* Pull mode */
     Gpio_Direction              direction;              /* Port direction */
 
 #if (GPIO_CFG_INTERRUPT_FUNCTION == STD_ENABLED)
+    void                        (*cb_func)(void);       /* Callback function when interrupt happends */
     Gpio_InterruptEn            interrupt;              /* Interrupt  */
     Gpio_InterruptEdge          edge;                   /* Interrupt edge */
 #endif /* (GPIO_CFG_INTERRUPT_FUNCTION == STD_ENABLED) */
