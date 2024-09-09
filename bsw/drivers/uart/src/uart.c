@@ -1,34 +1,19 @@
 #include <string.h>
 #include "uart.h"
 
-/* Tx buffer information */
-static Uart_UartTxBuff_St   Uart_gTxBuffInf;
+
 /* Rx buffer information */
-static Uart_UartRxBuff_St   Uart_gRxBuffInf;
+static uint8 *          UART_gpRxBuffer;
+static uint16           UART_gRxDataLength;
+static uint16           UART_gRxCurDataIdx;
+
+/* Tx buffer information */
+static uint8 const *    UART_gpTxBuffer;
+static uint16           UART_gTxDataLength;
+static uint16           UART_gTxCurDataIdx;
+
 /* Transmission status */
-static Uart_StatusType      Uart_gTxStatus;
-/* Internal Rx buffer */
-static uint8                Uart_gRxBuff[UART_CFG_RX_BUFF_LEN];
-
-/**
- * @brief       Push received data to Rx buffer 
- * @param[in]   DataPtr Pointer to RxData
- * @retval      None
- */
-static void Uart_PushDataToRxBuff(uint8 const * rxData)
-{
-    if (Uart_gRxBuffInf.status != UART_BUFFER_READY)
-    {
-        Uart_gRxBuffInf.buffPtr[Uart_gRxBuffInf.curIndex] = *rxData;
-        Uart_gRxBuffInf.curIndex++;
-
-        if (Uart_gRxBuffInf.curIndex >= UART_CFG_RX_BUFF_LEN)
-        {
-            /* No more space. Set Rx buffer status to READY */
-            Uart_gRxBuffInf.status = UART_BUFFER_READY;
-        }
-    }
-}
+static UART_StatusType  UART_gTxStatus;
 
 /**
  * @brief       Handles data transmission
@@ -36,9 +21,9 @@ static void Uart_PushDataToRxBuff(uint8 const * rxData)
  *              Tx interrupt shall disable in USCI0TX_ISR function.
  * @retval      None
  */
-static void Uart_HandlingDataTransmission(void)
+static void UART_HandlingDataTransmission(void)
 {
-    if ( Uart_gTxBuffInf.curIndex < Uart_gTxBuffInf.length )
+    if (UART_gTxCurDataIdx < UART_gTxDataLength)
     {
         /* Enable USCI_A0 TX interrupt */
         IE2 |= UCA0TXIE;
@@ -46,14 +31,14 @@ static void Uart_HandlingDataTransmission(void)
         /* USCI_A0 TX buffer ready? */
         if (IFG2 & UCA0TXIFG)
         {
-            UCA0TXBUF = Uart_gTxBuffInf.buffPtr[Uart_gTxBuffInf.curIndex];
-            Uart_gTxBuffInf.curIndex++;
+            UCA0TXBUF = UART_gpTxBuffer[UART_gTxCurDataIdx];
+            UART_gTxCurDataIdx++;
         }
     }
     else
     {
         /* All data are transmitted. Set Uart status to IDLE */
-        Uart_gTxStatus = UART_IDLE;
+        UART_gTxStatus = UART_IDLE;
     }
 }
 
@@ -87,42 +72,59 @@ void __attribute__ ((interrupt(USCIAB0RX_VECTOR))) USCI0RX_ISR (void)
 #error Compiler not supported!
 #endif
 {
-    Uart_PushDataToRxBuff( (uint8*) &UCA0RXBUF );
+    /* Check if Rx buffer has space to store data */
+    if (UART_gRxCurDataIdx < UART_gRxDataLength)
+    {
+        UART_gpRxBuffer[UART_gRxCurDataIdx] = UCA0RXBUF;
+        UART_gRxCurDataIdx++;
+    }
+    else
+    {
+        /* Need to call UART_ResetRxDataIndex() to reset UART_gRxCurDataIdx. Do nothing */
+    }
 
     /* Clear Rx interrupt flag */
     IFG2    &= ~(UCA0RXIFG);
 }
 
 /**
- * @brief       Get UART Transmission status
- * @retval      Uart_StatusType
+ * @brief       Receive data buffer configuration function
+ * @param[in]   DataPtr Pointer to receive data buffer
+ * @retval      STD_NOT_OK - Config not successful, STD_OK - Config successful
  */
-Uart_StatusType UART_GetTransmissionStatus(void)
+Std_StatusType UART_ConfigReceiveDataBuffer(uint8 * DataPtr, const uint8 DataLength)
 {
-    return Uart_gTxStatus;
-}
-
-/**
- * @brief       Get received data
- * @param[out]  DataPtr Pointer to get data buffer
- * @retval      STD_NOT_OK - Get not successful, STD_OK - get successful
- */
-Std_StatusType UART_GetReceivedData(uint8 * DataPtr)
-{
-    if (Uart_gRxBuffInf.status == UART_BUFFER_READY)
+    if (DataPtr != NULL)
     {
-        memcpy(DataPtr, Uart_gRxBuffInf.buffPtr, UART_CFG_RX_BUFF_LEN);
+        UART_gpRxBuffer     = DataPtr;
+        UART_gRxDataLength  = DataLength;
+        UART_gRxCurDataIdx  = 0U;
 
-        Uart_gRxBuffInf.curIndex = 0U;
-        Uart_gRxBuffInf.status   = UART_BUFFER_EMPTY;
+        /* Enable USCI_A0 RX interrupt */
+        IE2 |= UCA0RXIE;
 
         return STD_OK;
     }
-    else
-    {
-        /* Rx buffer is not ready yet */
-        return STD_NOT_OK;
-    }
+
+    return STD_NOT_OK;
+}
+
+/**
+ * @brief       Reset UART reception data index
+ * @retval      UART_StatusType
+ */
+void UART_ResetRxDataIndex(void)
+{
+    UART_gRxCurDataIdx = 0U;
+}
+
+/**
+ * @brief       Get UART Transmission status
+ * @retval      UART_StatusType
+ */
+UART_StatusType UART_GetTransmissionStatus(void)
+{
+    return UART_gTxStatus;
 }
 
 /**
@@ -131,13 +133,15 @@ Std_StatusType UART_GetReceivedData(uint8 * DataPtr)
  * @param[in]   Length  Length of data
  * @retval      STD_NOT_OK - Trigger not successful, STD_OK - Trigger successful
  */
-Std_StatusType UART_TransmitData(uint8 const * DataPtr, const uint8 Length)
+Std_StatusType UART_TransmitData(uint8 const * DataPtr, const uint8 DataLength)
 {
     if ((DataPtr != NULL) \
-    && (Uart_gTxStatus == UART_IDLE))
+    && (UART_gTxStatus == UART_IDLE))
     {
-        Uart_gTxBuffInf = (Uart_UartTxBuff_St) {DataPtr, Length, 0U};
-        Uart_gTxStatus  = UART_BUSY;
+        UART_gpTxBuffer     = DataPtr;
+        UART_gTxDataLength  = DataLength;
+        UART_gTxCurDataIdx  = 0U;
+        UART_gTxStatus      = UART_BUSY;
 
         return STD_OK;
     }
@@ -163,11 +167,6 @@ void UART_InitFunction(void)
     UCA0BR0     = UART_CFG_UCBR0_REG;
     UCA0BR1     = UART_CFG_UCBR1_REG;
     UCA0MCTL    = UART_CFG_UCBRSx_REG;
-
-    /* Enable USCI_A0 RX interrupt */
-    IE2 |= UCA0RXIE;
-
-    Uart_gRxBuffInf = (Uart_UartRxBuff_St) {Uart_gRxBuff, 0U, UART_BUFFER_EMPTY};
 }
 
 /**
@@ -176,5 +175,5 @@ void UART_InitFunction(void)
  */
 void UART_MainFunction(void)
 {
-    Uart_HandlingDataTransmission();
+    UART_HandlingDataTransmission();
 }

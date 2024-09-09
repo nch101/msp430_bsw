@@ -2,18 +2,18 @@
 #define UART_H
 
 #include "uart_cfg.h"
-#include "uart_types.h"
 
 typedef enum __attribute__((packed))
 {
     UART_IDLE,
     UART_BUSY,
     UART_ERROR,
-}  Uart_StatusType;
+}  UART_StatusType;
 
-extern Uart_StatusType UART_GetTransmissionStatus(void);
-extern Std_StatusType UART_GetReceivedData(uint8 * DataPtr);
-extern Std_StatusType UART_TransmitData(uint8 const * DataPtr, const uint8 Length);
+extern void UART_ResetRxDataIndex(void);
+extern Std_StatusType UART_ConfigReceiveDataBuffer(uint8 * DataPtr, const uint8 DataLength);
+extern UART_StatusType UART_GetTransmissionStatus(void);
+extern Std_StatusType UART_TransmitData(uint8 const * DataPtr, const uint8 DataLength);
 extern void UART_InitFunction(void);
 extern void UART_MainFunction(void);
 

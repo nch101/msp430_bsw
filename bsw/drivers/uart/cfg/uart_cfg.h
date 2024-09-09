@@ -5,11 +5,6 @@
 #include "mcu_cfg.h"
 
 /**
- * @brief UART Rx buffer length
- */
-#define UART_CFG_RX_BUFF_LEN                8U
-
-/**
  * @brief UART baudrate
  * @note  Only baudrates corresponding to the clock speed as shown below are supported
  *          9600        at  1MHz, 8MHz;
