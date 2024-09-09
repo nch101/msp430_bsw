@@ -6,14 +6,17 @@
  */
 void GPT_InitFunction(void)
 {
+    /* Configure Timer A counter */
+    TA0CCR0 = GPT_CFG_TIMER_A_COUNT;
+
+    TACCTL0 = CCIE;             /* Enable CCR0 interrupt */
+
     /* Configure Timer A */
-    TACCTL0 = GPT_CFG_TIMER_A_CLK_SRC_REG   \
+    TA0CTL  = GPT_CFG_TIMER_A_CLK_SRC_REG   \
                 | GPT_CFG_TIMER_A_MODE_REG  \
                 | ID_0          /* Divide by 1 */               \
                 | TAIE          /* Enable timer A interrupt */  \
                 ;
-    /* Configure Timer A counter */
-    TA0CCR0 = GPT_CFG_TIMER_A_COUNT;
 }
 
 /**
@@ -22,12 +25,13 @@ void GPT_InitFunction(void)
  */
 void GPT_StartTimer(void)
 {
-    /* Start Timer A */
-    TACCTL0 = GPT_CFG_TIMER_A_MODE_REG      \
-                | TACLR \
-                ;
     /* Configure Timer A counter */
     TA0CCR0 = GPT_CFG_TIMER_A_COUNT;
+
+    /* Start Timer A */
+    TA0CTL  = GPT_CFG_TIMER_A_MODE_REG      \
+                | TACLR \
+                ;
 }
 
 /**
@@ -37,7 +41,7 @@ void GPT_StartTimer(void)
 void GPT_StopTimer(void)
 {
     /* Stop Timer A */
-    TACCTL0 = MC_0;
+    TA0CTL  = MC_0;
 }
 
 #if defined(__TI_COMPILER_VERSION__) || defined(__IAR_SYSTEMS_ICC__)
