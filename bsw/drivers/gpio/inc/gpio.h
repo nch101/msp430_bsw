@@ -12,9 +12,8 @@ typedef enum __attribute__((packed))
 
 typedef enum __attribute__((packed))
 {
-    GPIO_PULL_OFF           = 0U,
+    GPIO_PULL_DOWN          = 0U,
     GPIO_PULL_UP,
-    GPIO_PULL_DOWN,
 } Gpio_PullMode;
 
 typedef enum __attribute__((packed))
@@ -25,7 +24,7 @@ typedef enum __attribute__((packed))
 
 typedef enum __attribute__((packed))
 {
-    GPIO_LOW_TO_HIGH,
+    GPIO_LOW_TO_HIGH        = 0U,
     GPIO_HIGH_TO_LOW,
 } Gpio_InterruptEdge;
 

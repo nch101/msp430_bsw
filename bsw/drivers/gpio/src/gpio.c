@@ -22,7 +22,7 @@ static Gpio_GpioReg_St GPIO_GetGPIOReg(uint8 group)
     {
         case 1U:
         {
-            reg.dirReg      = (uint8 *) &P1IN;
+            reg.inputReg    = (uint8 *) &P1IN;
             reg.outputReg   = (uint8 *) &P1OUT;
             reg.dirReg      = (uint8 *) &P1DIR;
             reg.resistorReg = (uint8 *) &P1REN;
@@ -80,32 +80,27 @@ void GPIO_ConfigPort(Gpio_GpioCfg_St* pGpioCfg)
     pGpioCfg->reg = GPIO_GetGPIOReg(pGpioCfg->group);
 
     /* Config direction */
-    if (pGpioCfg->direction == GPIO_INPUT)
+    if (pGpioCfg->direction == GPIO_OUTPUT)
     {
+        *(pGpioCfg->reg.dirReg) |= pGpioCfg->pin;
+    }
+    else
+    {
+        /* Working as an input pin */
         *(pGpioCfg->reg.dirReg) &= ~(pGpioCfg->pin);
 
         /* Config pull mode */
-        if ((pGpioCfg->pull) == GPIO_PULL_UP)
-        {
-            *(pGpioCfg->reg.resistorReg) |= pGpioCfg->pin;
-            *(pGpioCfg->reg.outputReg)   |= pGpioCfg->pin;
-        }
-        else if ((pGpioCfg->pull) == GPIO_PULL_DOWN)
+        if ((pGpioCfg->pull) == GPIO_PULL_DOWN)
         {
             *(pGpioCfg->reg.resistorReg) |= pGpioCfg->pin;
             *(pGpioCfg->reg.outputReg)   &= ~(pGpioCfg->pin);
         }
         else
         {
-            *(pGpioCfg->reg.resistorReg) &= ~(pGpioCfg->pin);
+            *(pGpioCfg->reg.resistorReg) |= pGpioCfg->pin;
+            *(pGpioCfg->reg.outputReg)   |= pGpioCfg->pin;
         }
     }
-    else
-    {
-        /* Pin works as an output */
-        *(pGpioCfg->reg.dirReg) |= pGpioCfg->pin;
-    }
-
 
 #if (GPIO_CFG_INTERRUPT_FUNCTION == STD_ENABLED)
     /* Config interrupt */
