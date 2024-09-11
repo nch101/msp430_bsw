@@ -47,6 +47,11 @@ static void OS_InitFunction(void)
     MCU_InitClock();
     GPT_InitFunction();
     MCU_InitOperatingMode();
+    
+#if (FLS_CFG_FUNCTION == STD_ENABLED)
+    Fls_InitFunction();
+#endif /* (FLS_CFG_FUNCTION == STD_ENABLED) */
+
     UART_InitFunction();
     GPIO_InitFunction();
     WDT_StartWatchdogTimer();
@@ -104,7 +109,9 @@ static void OS_Task_5ms(void)
  */
 static void OS_Task_10ms(void)
 {
-
+#if (FLS_CFG_FUNCTION == STD_ENABLED)
+    Fls_MainFunction();
+#endif /* (FLS_CFG_FUNCTION == STD_ENABLED) */
 }
 #endif /* (OS_CFG_TASK_10MS == STD_ENABLED) */
 

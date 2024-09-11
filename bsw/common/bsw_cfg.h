@@ -10,5 +10,9 @@
  */
 #define UART_CFG_FUNCTION                   STD_ENABLED
 
+/**
+ * @brief Flash driver enable
+ */
+#define FLS_CFG_FUNCTION                    STD_DISABLED
 
 #endif /* BSW_CFG_H */
