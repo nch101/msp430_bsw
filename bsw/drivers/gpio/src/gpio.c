@@ -1,35 +1,40 @@
-#include <string.h>
 #include "gpio.h"
 
 #if (GPIO_CFG_INTERRUPT_FUNCTION == STD_ENABLED)
-static Gpio_HandleISRFunc_St Gpio_gCallBackFuncPort1[GPIO_CFG_MAX_CALLBACK_FUNC1];
-static Gpio_HandleISRFunc_St Gpio_gCallBackFuncPort2[GPIO_CFG_MAX_CALLBACK_FUNC2];
+#include <string.h>
+#endif /* (GPIO_CFG_INTERRUPT_FUNCTION == STD_ENABLED) */
 
-static uint8 Gpio_gCallbackFuncPort1Idx;
-static uint8 Gpio_gCallbackFuncPort2Idx;
+
+#if (GPIO_CFG_FUNCTION == STD_ENABLED)
+#if (GPIO_CFG_INTERRUPT_FUNCTION == STD_ENABLED)
+static Gpio_HandleISRFuncType Gpio_aCallBackFuncPort1[GPIO_CFG_MAX_CALLBACK_FUNC1];
+static Gpio_HandleISRFuncType Gpio_aCallBackFuncPort2[GPIO_CFG_MAX_CALLBACK_FUNC2];
+
+static uint8 Gpio_u8CbFuncPort1Idx;
+static uint8 Gpio_u8CbFuncPort2Idx;
 #endif /* (GPIO_CFG_INTERRUPT_FUNCTION == STD_ENABLED) */
 
 /**
  * @brief       Get GPIO register by group ID
- * @param[in]   group   Group ID
- * @retval      Gpio_GpioReg_St
+ * @param[in]   u8Group         Group ID
+ * @retval      Gpio_GpioRegType
  */
-static Gpio_GpioReg_St GPIO_GetGPIOReg(uint8 group)
+static Gpio_GpioRegType Gpio_GetGPIOReg(const uint8 u8Group)
 {
-    volatile Gpio_GpioReg_St reg = {0};
+    volatile Gpio_GpioRegType sReg = {0};
 
-    switch (group)
+    switch (u8Group)
     {
         case 1U:
         {
-            reg.inputReg    = (uint8 *) &P1IN;
-            reg.outputReg   = (uint8 *) &P1OUT;
-            reg.dirReg      = (uint8 *) &P1DIR;
-            reg.resistorReg = (uint8 *) &P1REN;
+            sReg.pInputRegPtr   = (uint8 *) &P1IN;
+            sReg.pOutputRegPtr  = (uint8 *) &P1OUT;
+            sReg.pDirRegPtr     = (uint8 *) &P1DIR;
+            sReg.pResRegPtr     = (uint8 *) &P1REN;
 
 #if (GPIO_CFG_INTERRUPT_FUNCTION == STD_ENABLED)
-            reg.interruptEdgeReg   = (uint8 *) &P1IES;
-            reg.interruptEnableReg = (uint8 *) &P1IE;
+            sReg.pInterruptEdgeRegPtr   = (uint8 *) &P1IES;
+            sReg.pInterruptEnRegPtr     = (uint8 *) &P1IE;
 #endif /* (GPIO_CFG_INTERRUPT_FUNCTION == STD_ENABLED) */
 
             break;
@@ -37,14 +42,14 @@ static Gpio_GpioReg_St GPIO_GetGPIOReg(uint8 group)
 
         case 2U:
         {
-            reg.inputReg    = (uint8 *) &P2IN;
-            reg.outputReg   = (uint8 *) &P2OUT;
-            reg.dirReg      = (uint8 *) &P2DIR;
-            reg.resistorReg = (uint8 *) &P2REN;
+            sReg.pInputRegPtr   = (uint8 *) &P2IN;
+            sReg.pOutputRegPtr  = (uint8 *) &P2OUT;
+            sReg.pDirRegPtr     = (uint8 *) &P2DIR;
+            sReg.pResRegPtr     = (uint8 *) &P2REN;
 
 #if (GPIO_CFG_INTERRUPT_FUNCTION == STD_ENABLED)
-            reg.interruptEdgeReg   = (uint8 *) &P2IES;
-            reg.interruptEnableReg = (uint8 *) &P2IE;
+            sReg.pInterruptEdgeRegPtr   = (uint8 *) &P2IES;
+            sReg.pInterruptEnRegPtr     = (uint8 *) &P2IE;
 #endif /* (GPIO_CFG_INTERRUPT_FUNCTION == STD_ENABLED) */
 
             break;
@@ -52,10 +57,10 @@ static Gpio_GpioReg_St GPIO_GetGPIOReg(uint8 group)
 
         case 3U:
         {
-            reg.inputReg    = (uint8 *) &P3IN;
-            reg.outputReg   = (uint8 *) &P3OUT;
-            reg.dirReg      = (uint8 *) &P3DIR;
-            reg.resistorReg = (uint8 *) &P3REN;
+            sReg.pInputRegPtr   = (uint8 *) &P3IN;
+            sReg.pOutputRegPtr  = (uint8 *) &P3OUT;
+            sReg.pDirRegPtr     = (uint8 *) &P3DIR;
+            sReg.pResRegPtr     = (uint8 *) &P3REN;
 
             break;
         }
@@ -67,79 +72,79 @@ static Gpio_GpioReg_St GPIO_GetGPIOReg(uint8 group)
         }
     }
 
-    return reg;
+    return sReg;
 }
 
 /**
  * @brief       Port configuration function
- * @param[in]   pGpioCfg    Pointer to port config variable
+ * @param[in]   pGpioCfgPtr     Pointer to port config variable
  * @retval      None
  */
-void GPIO_ConfigPort(Gpio_GpioCfg_St* pGpioCfg)
+void Gpio_ConfigPort(Gpio_GpioCfgType* const pGpioCfgPtr)
 {
-    pGpioCfg->reg = GPIO_GetGPIOReg(pGpioCfg->group);
+    pGpioCfgPtr->sReg = Gpio_GetGPIOReg(pGpioCfgPtr->u8Group);
 
     /* Config direction */
-    if (pGpioCfg->direction == GPIO_OUTPUT)
+    if (pGpioCfgPtr->eDirection == GPIO_OUTPUT)
     {
-        *(pGpioCfg->reg.dirReg) |= pGpioCfg->pin;
+        *(pGpioCfgPtr->sReg.pDirRegPtr) |= pGpioCfgPtr->u8Pin;
     }
     else
     {
         /* Working as an input pin */
-        *(pGpioCfg->reg.dirReg) &= ~(pGpioCfg->pin);
+        *(pGpioCfgPtr->sReg.pDirRegPtr) &= ~(pGpioCfgPtr->u8Pin);
 
         /* Config pull mode */
-        if ((pGpioCfg->pull) == GPIO_PULL_DOWN)
+        if ((pGpioCfgPtr->ePull) == GPIO_PULL_DOWN)
         {
-            *(pGpioCfg->reg.resistorReg) |= pGpioCfg->pin;
-            *(pGpioCfg->reg.outputReg)   &= ~(pGpioCfg->pin);
+            *(pGpioCfgPtr->sReg.pResRegPtr)     |= pGpioCfgPtr->u8Pin;
+            *(pGpioCfgPtr->sReg.pOutputRegPtr)  &= ~(pGpioCfgPtr->u8Pin);
         }
         else
         {
-            *(pGpioCfg->reg.resistorReg) |= pGpioCfg->pin;
-            *(pGpioCfg->reg.outputReg)   |= pGpioCfg->pin;
+            *(pGpioCfgPtr->sReg.pResRegPtr)     |= pGpioCfgPtr->u8Pin;
+            *(pGpioCfgPtr->sReg.pOutputRegPtr)  |= pGpioCfgPtr->u8Pin;
         }
     }
 
 #if (GPIO_CFG_INTERRUPT_FUNCTION == STD_ENABLED)
     /* Config interrupt */
-    if ((pGpioCfg->group == 1U) \
-        || (pGpioCfg->group == 2U))
+    if ((pGpioCfgPtr->u8Group == 1U) \
+        || (pGpioCfgPtr->u8Group == 2U))
     {
-        if (pGpioCfg->interrupt == GPIO_ENABLE_INTERRUPT)
+        if (pGpioCfgPtr->eInterrupt == GPIO_ENABLE_INTERRUPT)
         {
             /* Set corresponding port to 1 */
-            *(pGpioCfg->reg.interruptEnableReg) |= pGpioCfg->pin;
+            *(pGpioCfgPtr->sReg.pInterruptEnRegPtr) |= pGpioCfgPtr->u8Pin;
 
-            if (pGpioCfg->group == 1U)
+            if (pGpioCfgPtr->u8Group == 1U)
             {
-                Gpio_gCallBackFuncPort1[Gpio_gCallbackFuncPort1Idx].cb_func = pGpioCfg->cb_func;
-                Gpio_gCallBackFuncPort1[Gpio_gCallbackFuncPort1Idx].pin     = pGpioCfg->pin;
-                Gpio_gCallbackFuncPort1Idx++;
+                Gpio_aCallBackFuncPort1[Gpio_u8CbFuncPort1Idx].pCbFuncPtr = pGpioCfgPtr->pCbFuncPtr;
+                Gpio_aCallBackFuncPort1[Gpio_u8CbFuncPort1Idx].u8Pin  = pGpioCfgPtr->u8Pin;
+                Gpio_u8CbFuncPort1Idx++;
             }
             else
             {
-                Gpio_gCallBackFuncPort2[Gpio_gCallbackFuncPort2Idx].cb_func = pGpioCfg->cb_func;
-                Gpio_gCallBackFuncPort2[Gpio_gCallbackFuncPort2Idx].pin     = pGpioCfg->pin;
-                Gpio_gCallbackFuncPort2Idx++;
+                Gpio_aCallBackFuncPort2[Gpio_u8CbFuncPort2Idx].pCbFuncPtr = pGpioCfgPtr->pCbFuncPtr;
+                Gpio_aCallBackFuncPort2[Gpio_u8CbFuncPort2Idx].u8Pin  = pGpioCfgPtr->u8Pin;
+                Gpio_u8CbFuncPort2Idx++;
             }
 
-            if (pGpioCfg->edge == GPIO_HIGH_TO_LOW)
+            if (pGpioCfgPtr->eEdge == GPIO_HIGH_TO_LOW)
             {
                 /* Set corresponding port to 1 */
-                *(pGpioCfg->reg.interruptEdgeReg) |= pGpioCfg->pin;
+                *(pGpioCfgPtr->sReg.pInterruptEdgeRegPtr) |= pGpioCfgPtr->u8Pin;
             }
             else
             {
                 /* Reset corresponding port to 0 */
-                *(pGpioCfg->reg.interruptEdgeReg) &= ~(pGpioCfg->pin);
+                *(pGpioCfgPtr->sReg.pInterruptEdgeRegPtr) &= ~(pGpioCfgPtr->u8Pin);
             }
         }
         else
         {
             /* Reset corresponding port to 0 */
-            *(pGpioCfg->reg.interruptEnableReg) &= ~(pGpioCfg->pin);
+            *(pGpioCfgPtr->sReg.pInterruptEnRegPtr) &= ~(pGpioCfgPtr->u8Pin);
         }
     }
     else
@@ -152,64 +157,64 @@ void GPIO_ConfigPort(Gpio_GpioCfg_St* pGpioCfg)
 
 /**
  * @brief       Port toggling function
- * @param[in]   pGpioCfg    Pointer to port config variable
+ * @param[in]   pGpioCfgPtr     Pointer to port config variable
  * @retval      None
  */
-void GPIO_TogglePort(Gpio_GpioCfg_St* pGpioCfg)
+void Gpio_TogglePort(const Gpio_GpioCfgType* const pGpioCfgPtr)
 {
-    *(pGpioCfg->reg.outputReg) ^= pGpioCfg->pin;
+    *(pGpioCfgPtr->sReg.pOutputRegPtr) ^= pGpioCfgPtr->u8Pin;
 }
 
 /**
  * @brief       Setting port to level
- * @param[in]   pGpioCfg    Pointer to port config variable
+ * @param[in]   pGpioCfgPtr    Pointer to port config variable
  * @param[in]   level       High, low
  * @retval      None
  */
-void GPIO_SetPort(Gpio_GpioCfg_St* pGpioCfg, Gpio_Level level)
+void Gpio_SetPort(const Gpio_GpioCfgType* const pGpioCfgPtr, const Gpio_LevelType level)
 {
     if (level == GPIO_HIGH)
     {
-        *(pGpioCfg->reg.outputReg) |= pGpioCfg->pin;
+        *(pGpioCfgPtr->sReg.pOutputRegPtr)  |= pGpioCfgPtr->u8Pin;
     }
     else
     {
-        *(pGpioCfg->reg.outputReg) &= ~(pGpioCfg->pin);
+        *(pGpioCfgPtr->sReg.pOutputRegPtr)  &= ~(pGpioCfgPtr->u8Pin);
     }
 }
 
 /**
  * @brief       Read port
- * @param[in]   pGpioCfg    Pointer to port config variable
- * @retval      Gpio_Level
+ * @param[in]   pGpioCfgPtr    Pointer to port config variable
+ * @retval      Gpio_LevelType
  */
-Gpio_Level GPIO_ReadPort(Gpio_GpioCfg_St* pGpioCfg)
+Gpio_LevelType Gpio_ReadPort(const Gpio_GpioCfgType* const pGpioCfgPtr)
 {
-    return (*(pGpioCfg->reg.inputReg) & pGpioCfg->pin) ? GPIO_HIGH : GPIO_LOW;
+    return (*(pGpioCfgPtr->sReg.pInputRegPtr) & pGpioCfgPtr->u8Pin) ? GPIO_HIGH : GPIO_LOW;
 }
 
 /**
  * @brief       GPIO initialization function
  * @retval      None
  */
-void GPIO_InitFunction(void)
+void Gpio_InitFunction(void)
 {
     /* Initializing all ports to eliminate wasted current consumption on unused pins */
-    P1DIR   = 0xFF;
-    P1OUT   = 0x00;
+    P1DIR = 0xFF;
+    P1OUT = 0x00;
 
-    P2DIR   = 0xFF;
-    P2OUT   = 0x00;
+    P2DIR = 0xFF;
+    P2OUT = 0x00;
 
-    P3DIR   = 0xFF;
-    P3OUT   = 0x00;
+    P3DIR = 0xFF;
+    P3OUT = 0x00;
 
 #if (GPIO_CFG_INTERRUPT_FUNCTION == STD_ENABLED)
-    Gpio_gCallbackFuncPort1Idx = 0U;
-    Gpio_gCallbackFuncPort2Idx = 0U;
+    Gpio_u8CbFuncPort1Idx = 0U;
+    Gpio_u8CbFuncPort2Idx = 0U;
 
-    (void)memset(Gpio_gCallBackFuncPort1, 0, sizeof(Gpio_HandleISRFunc_St) * GPIO_CFG_MAX_CALLBACK_FUNC1);
-    (void)memset(Gpio_gCallBackFuncPort2, 0, sizeof(Gpio_HandleISRFunc_St) * GPIO_CFG_MAX_CALLBACK_FUNC2);
+    (void)memset(Gpio_aCallBackFuncPort1, 0, sizeof(Gpio_HandleISRFuncType) * GPIO_CFG_MAX_CALLBACK_FUNC1);
+    (void)memset(Gpio_aCallBackFuncPort2, 0, sizeof(Gpio_HandleISRFuncType) * GPIO_CFG_MAX_CALLBACK_FUNC2);
 #endif /* (GPIO_CFG_INTERRUPT_FUNCTION == STD_ENABLED) */
 
 }
@@ -219,13 +224,13 @@ void GPIO_InitFunction(void)
  * @brief       
  * @retval      None
  */
-void __attribute__((weak)) GPIO_HandlerPort1ISR(volatile uint8* interruptFlag)
+void __attribute__((weak)) Gpio_HandlerPort1ISR(volatile uint8* const pInterruptFlagPtr)
 {
     for (uint8 index = 0; index < GPIO_CFG_MAX_CALLBACK_FUNC1; index++)
     {
-        if (Gpio_gCallBackFuncPort1[index].pin & (*interruptFlag))
+        if (Gpio_aCallBackFuncPort1[index].u8Pin & (*pInterruptFlagPtr))
         {
-            Gpio_gCallBackFuncPort1[index].cb_func();
+            Gpio_aCallBackFuncPort1[index].pCbFuncPtr();
         }
     }
 }
@@ -234,13 +239,13 @@ void __attribute__((weak)) GPIO_HandlerPort1ISR(volatile uint8* interruptFlag)
  * @brief       
  * @retval      None
  */
-void __attribute__((weak)) GPIO_HandlerPort2ISR(volatile uint8* interruptFlag)
+void __attribute__((weak)) Gpio_HandlerPort2ISR(volatile uint8* const pInterruptFlagPtr)
 {
     for (uint8 index = 0; index < GPIO_CFG_MAX_CALLBACK_FUNC2; index++)
     {
-        if (Gpio_gCallBackFuncPort2[index].pin & (*interruptFlag))
+        if (Gpio_aCallBackFuncPort2[index].u8Pin & (*pInterruptFlagPtr))
         {
-            Gpio_gCallBackFuncPort2[index].cb_func();
+            Gpio_aCallBackFuncPort2[index].pCbFuncPtr();
         }
     }
 }
@@ -254,7 +259,7 @@ void __attribute__ ((interrupt(PORT1_VECTOR))) PORT1_ISR (void)
 #error Compiler not supported!
 #endif
 {
-    GPIO_HandlerPort1ISR(&P1IFG);
+    Gpio_HandlerPort1ISR(&P1IFG);
 }
 
 #if defined(__TI_COMPILER_VERSION__) || defined(__IAR_SYSTEMS_ICC__)
@@ -266,6 +271,8 @@ void __attribute__ ((interrupt(PORT2_VECTOR))) PORT2_ISR (void)
 #error Compiler not supported!
 #endif
 {
-    GPIO_HandlerPort2ISR(&P2IFG);
+    Gpio_HandlerPort2ISR(&P2IFG);
 }
 #endif /* (GPIO_CFG_INTERRUPT_FUNCTION == STD_ENABLED) */
+
+#endif /* (GPIO_CFG_FUNCTION == STD_ENABLED) */

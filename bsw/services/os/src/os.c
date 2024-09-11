@@ -43,18 +43,23 @@ static void OS_InitFunction(void)
 {
     OS_InitTimerTicks();
 
-    WDT_SuspendWatchdogTimer();
-    MCU_InitClock();
-    GPT_InitFunction();
-    MCU_InitOperatingMode();
+    Wdt_SuspendWatchdogTimer();
+    Mcu_InitClock();
+    Gpt_InitFunction();
+    Mcu_InitOperatingMode();
     
 #if (FLS_CFG_FUNCTION == STD_ENABLED)
     Fls_InitFunction();
 #endif /* (FLS_CFG_FUNCTION == STD_ENABLED) */
 
-    UART_InitFunction();
-    GPIO_InitFunction();
-    WDT_StartWatchdogTimer();
+#if (UART_CFG_FUNCTION == STD_ENABLED)
+    Uart_InitFunction();
+#endif /* (UART_CFG_FUNCTION == STD_ENABLED) */
+
+#if (GPIO_CFG_FUNCTION == STD_ENABLED)
+    Gpio_InitFunction();
+#endif /* (GPIO_CFG_FUNCTION == STD_ENABLED) */
+    Wdt_StartWatchdogTimer();
 }
 
 #if (OS_CFG_IDLE_TASK == STD_ENABLED)
@@ -87,6 +92,10 @@ static void OS_BackgroundTask(void)
  */
 static void OS_Task_1ms(void)
 {
+
+#if (UART_CFG_FUNCTION == STD_ENABLED)
+    Uart_MainFunction()
+#endif /* (UART_CFG_FUNCTION == STD_ENABLED) */
 
 }
 #endif /* (OS_CFG_TASK_1MS == STD_ENABLED) */
@@ -184,7 +193,7 @@ OS_MainFunction()
 
     while (1U)
     {
-        WDT_ClearWatchdogTimer();
+        Wdt_ClearWatchdogTimer();
 
 #if (OS_CFG_BACKGROUND_TASK == STD_ENABLED)
         OS_BackgroundTask();

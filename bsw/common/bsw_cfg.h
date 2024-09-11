@@ -6,13 +6,18 @@
 #include "cfg_types.h"
 
 /**
- * @brief UART enable
+ * @brief UART driver enable
  */
-#define UART_CFG_FUNCTION                   STD_ENABLED
+#define UART_CFG_FUNCTION                   STD_DISABLED
 
 /**
  * @brief Flash driver enable
  */
 #define FLS_CFG_FUNCTION                    STD_DISABLED
+
+/**
+ * @brief GPIO driver enable
+ */
+#define GPIO_CFG_FUNCTION                   STD_DISABLED
 
 #endif /* BSW_CFG_H */

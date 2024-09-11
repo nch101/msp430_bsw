@@ -5,7 +5,7 @@
  * @brief       Suspend watchdog timer
  * @retval      None
  */
-void WDT_SuspendWatchdogTimer(void)
+void Wdt_SuspendWatchdogTimer(void)
 {
     WDTCTL = WDTPW + WDTHOLD;
 }
@@ -14,7 +14,7 @@ void WDT_SuspendWatchdogTimer(void)
  * @brief       Clear watchdog timer
  * @retval      None
  */
-void WDT_ClearWatchdogTimer(void)
+void Wdt_ClearWatchdogTimer(void)
 {
     WDTCTL = WDTPW + WDTCNTCL;
 }
@@ -23,7 +23,7 @@ void WDT_ClearWatchdogTimer(void)
  * @brief       Start watchdog timer
  * @retval      None
  */
-void WDT_StartWatchdogTimer(void)
+void Wdt_StartWatchdogTimer(void)
 {
     WDTCTL = WDT_CFG_WDTCTL_REG;
 }

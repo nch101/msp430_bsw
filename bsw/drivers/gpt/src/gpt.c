@@ -4,7 +4,7 @@
  * @brief       GPT init function
  * @retval      None
  */
-void GPT_InitFunction(void)
+void Gpt_InitFunction(void)
 {
     /* Configure Timer A counter */
     TA0CCR0 = GPT_CFG_TIMER_A_COUNT;
@@ -23,7 +23,7 @@ void GPT_InitFunction(void)
  * @brief       GPT driver start timer function
  * @retval      None
  */
-void GPT_StartTimer(void)
+void Gpt_StartTimer(void)
 {
     /* Configure Timer A counter */
     TA0CCR0 = GPT_CFG_TIMER_A_COUNT;
@@ -38,7 +38,7 @@ void GPT_StartTimer(void)
  * @brief       GPT driver stop timer function
  * @retval      None
  */
-void GPT_StopTimer(void)
+void Gpt_StopTimer(void)
 {
     /* Stop Timer A */
     TA0CTL  = MC_0;

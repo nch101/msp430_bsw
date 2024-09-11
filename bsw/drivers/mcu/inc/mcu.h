@@ -43,12 +43,12 @@ typedef enum
     MCU_LOW_POWER_4_MODE,
 } Mcu_OperatingModeType;
 
-extern void MCU_InitClock(void);
-extern void MCU_InitOperatingMode(void);
+extern void Mcu_InitClock(void);
+extern void Mcu_InitOperatingMode(void);
 
 #if (MCU_CFG_OPERATING_MODE_API == STD_ENABLED)
-extern void MCU_EnterOperatingMode(const Mcu_OperatingModeType OperatingMode);
-extern uint8 MCU_GetOperatingMode(void);
+extern void Mcu_EnterOperatingMode(const Mcu_OperatingModeType eOperatingMode);
+extern uint8 Mcu_GetOperatingMode(void);
 #endif /* (MCU_CFG_OPERATING_MODE_API == STD_ENABLED) */
 
 #endif /* MCU_H */

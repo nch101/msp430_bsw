@@ -3,18 +3,20 @@
 
 #include "uart_cfg.h"
 
+#if (UART_CFG_FUNCTION == STD_ENABLED)
 typedef enum __attribute__((packed))
 {
     UART_IDLE,
     UART_BUSY,
     UART_ERROR,
-}  UART_StatusType;
+}  Uart_StatusType;
 
-extern void UART_ResetRxDataIndex(void);
-extern Std_StatusType UART_ConfigReceiveDataBuffer(uint8 * DataPtr, const uint8 DataLength);
-extern UART_StatusType UART_GetTransmissionStatus(void);
-extern Std_StatusType UART_TransmitData(uint8 const * DataPtr, const uint8 DataLength);
-extern void UART_InitFunction(void);
-extern void UART_MainFunction(void);
+extern void Uart_ResetRxDataIndex(void);
+extern Std_StatusType Uart_ConfigReceiveDataBuffer(uint8 * const DataPtr, const uint8 DataLength);
+extern Uart_StatusType Uart_GetTransmissionStatus(void);
+extern Std_StatusType Uart_TransmitData(uint8 const * const DataPtr, const uint8 DataLength);
+extern void Uart_InitFunction(void);
+extern void Uart_MainFunction(void);
 
+#endif /* (UART_CFG_FUNCTION == STD_ENABLED) */
 #endif /* UART_H */

@@ -3,10 +3,12 @@
 
 #include "std_types.h"
 
+#if (GPIO_CFG_FUNCTION == STD_ENABLED)
 typedef struct
 {
-    void  (*cb_func)(void); 
-    uint8 pin;                    /* Pin ID */
-} Gpio_HandleISRFunc_St;
+    void  (*pCbFuncPtr)(void);  /* Pointer to callback function */
+    uint8 u8Pin;                /* Pin ID */
+} Gpio_HandleISRFuncType;
 
+#endif /* (GPIO_CFG_FUNCTION == STD_ENABLED) */
 #endif /* GPIO_TYPES_H */
