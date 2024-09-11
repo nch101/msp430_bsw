@@ -14,8 +14,7 @@ void Gpt_InitFunction(void)
     /* Configure Timer A */
     TA0CTL  = GPT_CFG_TIMER_A_CLK_SRC_REG   \
                 | GPT_CFG_TIMER_A_MODE_REG  \
-                | ID_0          /* Divide by 1 */               \
-                | TAIE          /* Enable timer A interrupt */  \
+                | ID_0  /* Divide by 1 */   \
                 ;
 }
 

@@ -1,5 +1,6 @@
 #include "os.h"
 
+static Gpio_GpioCfgType led10;
 static uint32 Os_gSystemTick;
 
 #if (OS_CFG_TASK_1MS == STD_ENABLED)
@@ -118,6 +119,7 @@ static void OS_Task_5ms(void)
  */
 static void OS_Task_10ms(void)
 {
+    Gpio_TogglePort(&led10);
 #if (FLS_CFG_FUNCTION == STD_ENABLED)
     Fls_MainFunction();
 #endif /* (FLS_CFG_FUNCTION == STD_ENABLED) */
@@ -130,7 +132,11 @@ static void OS_Task_10ms(void)
  */
 void __attribute__((weak)) OS_InitApplicationTask(void)
 {
+    led10.u8Group    = 1U;
+    led10.u8Pin      = GPIO_PIN_0;
+    led10.eDirection = GPIO_OUTPUT;
 
+    Gpio_ConfigPort(&led10);
 }
 
 /**
@@ -146,7 +152,7 @@ void __attribute__((weak)) OS_ApplicationTask(void)
  * @brief       
  * @retval      None
  */
-void OS_ProcessTiming(void)
+inline void OS_ProcessTiming(void)
 {
     Os_gSystemTick++;
 
@@ -216,7 +222,7 @@ OS_MainFunction()
 #endif /* (OS_CFG_TASK_5MS == STD_ENABLED) */
 
 #if (OS_CFG_TASK_10MS == STD_ENABLED)
-        if (Os_gTask10msTick >= 10U)
+        if (Os_gTask10msTick >= 100U)
         {
             Os_gTask10msTick = 0;
             OS_Task_10ms();
@@ -225,6 +231,4 @@ OS_MainFunction()
 
         OS_ApplicationTask();
     }
-
-    return 0;
 }

@@ -18,6 +18,6 @@
 /**
  * @brief GPIO driver enable
  */
-#define GPIO_CFG_FUNCTION                   STD_DISABLED
+#define GPIO_CFG_FUNCTION                   STD_ENABLED
 
 #endif /* BSW_CFG_H */
