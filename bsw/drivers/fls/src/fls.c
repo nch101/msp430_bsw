@@ -1,7 +1,7 @@
 #include "fls.h"
 
 
-#if (FLS_CFG_FUNCTION == STD_ENABLED)
+#if (BSW_CFG_FLS_FUNCTION == STD_ENABLED)
 
 /* Currently executed job */
 static Fls_JobType      Fls_eJob;
@@ -9,8 +9,8 @@ static Fls_JobType      Fls_eJob;
 /* Current job status */
 static Fls_StatusType   Fls_eJobStatus;
 
-/* Data u16Length */
-static uint16           Fls_u16Length;
+/* Data u8Length */
+static uint8            Fls_u8Length;
 
 static uint8 *          Fls_pSourceAddrPtr;
 
@@ -32,7 +32,7 @@ static void Fls_ResetInternalVariable(void)
 {
     Fls_eJob            = FLS_JOB_NONE;
     Fls_eJobStatus      = FLS_IDLE;
-    Fls_u16Length       = 0U;
+    Fls_u8Length        = 0U;
     Fls_pTargetAddrPtr  = NULL;
     Fls_pSourceAddrPtr  = NULL;
 }
@@ -50,7 +50,7 @@ static void Fls_HandlingFlsEraseJob(void)
             if ((FCTL3 & BUSY) == 0U)
             {
                 /* Stop watchdog timer */
-                WDT_SuspendWatchdogTimer();
+                Wdt_SuspendWatchdogTimer();
                 FLS_CLEAR_LOCK_BIT();
                 FLS_SET_ERASE_BIT();
 
@@ -68,7 +68,7 @@ static void Fls_HandlingFlsEraseJob(void)
             if ((FCTL3 & BUSY) == 0U)
             {
                 FLS_SET_LOCK_BIT();
-                WDT_StartWatchdogTimer();
+                Wdt_StartWatchdogTimer();
                 Fls_ResetInternalVariable();
             }
 
@@ -95,7 +95,7 @@ static void Fls_HandlingFlsWriteJob(void)
             if ((FCTL3 & BUSY) == 0U)
             {
                 /* Stop watchdog timer */
-                WDT_SuspendWatchdogTimer();
+                Wdt_SuspendWatchdogTimer();
                 FLS_CLEAR_LOCK_BIT();
                 FLS_SET_WRITE_BIT();
 
@@ -118,12 +118,12 @@ static void Fls_HandlingFlsWriteJob(void)
                     Fls_pTargetAddrPtr++;
                     Fls_pSourceAddrPtr++;
 
-                    Fls_u16Length--;
+                    Fls_u8Length--;
 
                     /* While until data has been written */
                     FLS_WAIT_WRITE_DONE();
 
-                    if (Fls_u16Length <= 0U)
+                    if (Fls_u8Length <= 0U)
                     {
                         /* No more data to write */
                         FLS_CLEAR_WRITE_BIT();
@@ -131,7 +131,7 @@ static void Fls_HandlingFlsWriteJob(void)
                         /* Skip waitting for setting BUSY bit to 0 */
 
                         FLS_SET_LOCK_BIT();
-                        WDT_StartWatchdogTimer();
+                        Wdt_StartWatchdogTimer();
                         Fls_ResetInternalVariable();
 
                         break;
@@ -166,9 +166,9 @@ static void Fls_HandlingFlsReadJob(void)
                 Fls_pTargetAddrPtr++;
                 Fls_pSourceAddrPtr++;
 
-                Fls_u16Length--;
+                Fls_u8Length--;
 
-                if (Fls_u16Length <= 0U)
+                if (Fls_u8Length <= 0U)
                 {
                     /* Release read job */
                     Fls_ResetInternalVariable();
@@ -219,10 +219,10 @@ Std_StatusType Fls_Erase(Fls_SegmentType eSegmentName)
  * @brief       Write to flash segment
  * @param[in]   eSegmentName            Name of segment
  * @param[in]   pSourceAddrPtr          Pointer to source data buffer
- * @param[in]   u16Length               Number of bytes to write
+ * @param[in]   u8Length                Number of bytes to write
  * @retval      STD_NOT_OK - Trigger not successful, STD_OK - Trigger successful
  */
-Std_StatusType Fls_Write(const Fls_SegmentType eSegmentName, uint8 * const pSourceAddrPtr, const uint16 u16Length)
+Std_StatusType Fls_Write(const Fls_SegmentType eSegmentName, uint8 * const pSourceAddrPtr, const uint8 u8Length)
 {
     if (pSourceAddrPtr == NULL)
     {
@@ -234,7 +234,7 @@ Std_StatusType Fls_Write(const Fls_SegmentType eSegmentName, uint8 * const pSour
         return STD_NOT_OK;
     }
 
-    if (u16Length > FLS_MAX_SEGMENT_SIZE)
+    if (u8Length > FLS_MAX_SEGMENT_SIZE)
     {
         return STD_NOT_OK;
     }
@@ -243,7 +243,7 @@ Std_StatusType Fls_Write(const Fls_SegmentType eSegmentName, uint8 * const pSour
     Fls_eJobStatus      = FLS_PENDING;
     Fls_pTargetAddrPtr  = Fls_pSegmentStartAddrPtr[(uint8) eSegmentName];
     Fls_pSourceAddrPtr  = pSourceAddrPtr;
-    Fls_u16Length       = u16Length;
+    Fls_u8Length        = u8Length;
 
     return STD_OK;
 }
@@ -253,13 +253,12 @@ Std_StatusType Fls_Write(const Fls_SegmentType eSegmentName, uint8 * const pSour
  * @brief       Read data from  
  * @param[in]   pSourceAddrPtr          Pointer to source data buffer
  * @param[out]  pTargetAddrPtr          Pointer to target data buffer
- * @param[in]   u16Length               Number of bytes to read
+ * @param[in]   u8Length                Number of bytes to read
  * @retval      STD_NOT_OK - Trigger not successful, STD_OK - Trigger successful
  */
-Std_StatusType Fls_Read(uint8 * const pSourceAddrPtr, uint8 * const pTargetAddrPtr, const uint16 u16Length)
+Std_StatusType Fls_Read(const Fls_SegmentType eSegmentName, uint8 * const pSourceAddrPtr, const uint8 u8Length)
 {
-    if ((pTargetAddrPtr == NULL) \
-      || (pSourceAddrPtr == NULL))
+    if (pSourceAddrPtr == NULL)
     {
         return STD_NOT_OK;
     }
@@ -271,9 +270,9 @@ Std_StatusType Fls_Read(uint8 * const pSourceAddrPtr, uint8 * const pTargetAddrP
 
     Fls_eJob            = FLS_JOB_READ;
     Fls_eJobStatus      = FLS_PROCESSING;
-    Fls_pTargetAddrPtr  = pTargetAddrPtr;
+    Fls_pTargetAddrPtr  = Fls_pSegmentStartAddrPtr[(uint8) eSegmentName];
     Fls_pSourceAddrPtr  = pSourceAddrPtr;
-    Fls_u16Length       = u16Length;
+    Fls_u8Length        = u8Length;
 
     return STD_OK;
 }
@@ -323,4 +322,4 @@ void Fls_MainFunction(void)
         }
     }
 }
-#endif /* (FLS_CFG_FUNCTION == STD_ENABLED) */
+#endif /* (BSW_CFG_FLS_FUNCTION == STD_ENABLED) */
