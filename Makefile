@@ -34,7 +34,7 @@ C_SOURCES_LIST  :=      \
     bsw/drivers/uart/src/uart.c \
     bsw/drivers/wdt/src/wdt.c   \
     bsw/services/os/src/os.c    \
-
+    bsw/services/nvm/src/nvm.c  \
 
 ############################ Include list ############################
 # C include list
@@ -54,6 +54,8 @@ C_INCLUDES_LIST :=          \
     bsw/drivers/wdt/cfg     \
     bsw/services/os/inc     \
     bsw/services/os/cfg     \
+    bsw/services/nvm/inc    \
+    bsw/services/nvm/cfg    \
 
 C_INCLUDES      := $(addprefix -I, $(C_INCLUDES_LIST))
 

@@ -53,5 +53,5 @@ void __attribute__ ((interrupt(TIMER0_A0_VECTOR))) TimerA_ISR (void)
 #endif
 {
     /* Call OS Timing Handling */
-    OS_ProcessTiming();
+    Os_ProcessTiming();
 }

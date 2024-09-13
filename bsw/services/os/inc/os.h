@@ -8,7 +8,8 @@
 #include "uart.h"
 #include "gpio.h"
 #include "wdt.h"
+#include "nvm.h"
 
-#define OS_MainFunction()                   int main(void)
+#define Os_MainFunction()                   int main(void)
 
 #endif /* OS_H */
