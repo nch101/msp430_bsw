@@ -4,7 +4,7 @@
 #include "gpio_cfg.h"
 #include "gpio_types.h"
 
-#if (GPIO_CFG_FUNCTION == STD_ENABLED)
+#if (BSW_CFG_GPIO_FUNCTION == STD_ENABLED)
 typedef enum __attribute__((packed))
 {
     GPIO_OUTPUT             = 0U,
@@ -85,5 +85,5 @@ extern void Gpio_SetPort(const Gpio_GpioCfgType* const pGpioCfgPtr, const Gpio_L
 extern Gpio_LevelType Gpio_ReadPort(const Gpio_GpioCfgType* const pGpioCfgPtr);
 extern void Gpio_InitFunction(void);
 
-#endif /* (GPIO_CFG_FUNCTION == STD_ENABLED) */
+#endif /* (BSW_CFG_GPIO_FUNCTION == STD_ENABLED) */
 #endif /* GPIO_H */

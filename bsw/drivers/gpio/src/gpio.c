@@ -5,7 +5,7 @@
 #endif /* (GPIO_CFG_INTERRUPT_FUNCTION == STD_ENABLED) */
 
 
-#if (GPIO_CFG_FUNCTION == STD_ENABLED)
+#if (BSW_CFG_GPIO_FUNCTION == STD_ENABLED)
 #if (GPIO_CFG_INTERRUPT_FUNCTION == STD_ENABLED)
 static Gpio_HandleISRFuncType Gpio_aCallBackFuncPort1[GPIO_CFG_MAX_CALLBACK_FUNC1];
 static Gpio_HandleISRFuncType Gpio_aCallBackFuncPort2[GPIO_CFG_MAX_CALLBACK_FUNC2];
@@ -275,4 +275,4 @@ void __attribute__ ((interrupt(PORT2_VECTOR))) PORT2_ISR (void)
 }
 #endif /* (GPIO_CFG_INTERRUPT_FUNCTION == STD_ENABLED) */
 
-#endif /* (GPIO_CFG_FUNCTION == STD_ENABLED) */
+#endif /* (BSW_CFG_GPIO_FUNCTION == STD_ENABLED) */

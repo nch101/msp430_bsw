@@ -3,7 +3,7 @@
 
 #include "bsw_cfg.h"
 
-#if (GPIO_CFG_FUNCTION == STD_ENABLED)
+#if (BSW_CFG_GPIO_FUNCTION == STD_ENABLED)
 /**
  * @brief 
  */
@@ -19,5 +19,5 @@
  */
 #define GPIO_CFG_MAX_CALLBACK_FUNC2         2U
 
-#endif /* (GPIO_CFG_FUNCTION == STD_ENABLED) */
+#endif /* (BSW_CFG_GPIO_FUNCTION == STD_ENABLED) */
 #endif /* GPIO_CFG_H */

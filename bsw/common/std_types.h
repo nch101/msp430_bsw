@@ -11,6 +11,14 @@
 #define NULL            ((void *) 0u)
 #endif /* NULL */
 
+#ifndef TRUE
+#define TRUE            1U
+#endif /* TRUE */
+
+#ifndef FALSE
+#define FALSE           0U
+#endif /* FALSE */
+
 typedef unsigned char   uint8;
 typedef signed char     sint8;
 typedef unsigned short  uint16;

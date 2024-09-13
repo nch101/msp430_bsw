@@ -8,16 +8,31 @@
 /**
  * @brief UART driver enable
  */
-#define UART_CFG_FUNCTION                   STD_DISABLED
+#define BSW_CFG_UART_FUNCTION               STD_DISABLED
 
 /**
  * @brief Flash driver enable
  */
-#define FLS_CFG_FUNCTION                    STD_DISABLED
+#define BSW_CFG_FLS_FUNCTION                STD_ENABLED
 
 /**
  * @brief GPIO driver enable
  */
-#define GPIO_CFG_FUNCTION                   STD_ENABLED
+#define BSW_CFG_GPIO_FUNCTION               STD_ENABLED
+
+/**
+ * @brief NVM service enable
+ */
+#define BSW_CFG_NVM_FUNCTION                STD_ENABLED
+
+/**
+ * @brief Max number of project configurations
+ */
+#define BSW_MAX_PROJECT_CONFIG              5U
+
+/**
+ * @brief Max number of DTC codes
+ */
+#define BSW_MAX_DTC_CODE                    5U
 
 #endif /* BSW_CFG_H */

@@ -1,7 +1,7 @@
 #include <string.h>
 #include "uart.h"
 
-#if (UART_CFG_FUNCTION == STD_ENABLED)
+#if (BSW_CFG_UART_FUNCTION == STD_ENABLED)
 
 /* Rx buffer information */
 static uint8 *          Uart_pRxBufferPtr;
@@ -180,4 +180,4 @@ void Uart_MainFunction(void)
     Uart_HandlingDataTransmission();
 }
 
-#endif /* (UART_CFG_FUNCTION == STD_ENABLED) */
+#endif /* (BSW_CFG_UART_FUNCTION == STD_ENABLED) */

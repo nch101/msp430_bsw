@@ -4,7 +4,7 @@
 #include "bsw_cfg.h"
 #include "mcu_cfg.h"
 
-#if (UART_CFG_FUNCTION == STD_ENABLED)
+#if (BSW_CFG_UART_FUNCTION == STD_ENABLED)
 /**
  * @brief UART baudrate
  * @note  Only baudrates corresponding to the clock speed as shown below are supported
@@ -226,5 +226,5 @@
                                                 UART_CFG_RX_BREAK_ISR_REG) & \
                                                 ~UCSWRST)
 
-#endif /* (UART_CFG_FUNCTION == STD_ENABLED) */
+#endif /* (BSW_CFG_UART_FUNCTION == STD_ENABLED) */
 #endif /* UART_CFG_H */
