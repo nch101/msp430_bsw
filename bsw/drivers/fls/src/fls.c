@@ -88,6 +88,8 @@ static void Fls_HandlingFlsEraseJob(void)
  */
 static void Fls_HandlingFlsWriteJob(void)
 {
+    uint8 u8Index;
+
     switch (Fls_eJobStatus)
     {
         case FLS_PENDING:
@@ -109,7 +111,7 @@ static void Fls_HandlingFlsWriteJob(void)
         {
             if ((FCTL3 & BUSY) == 0U)
             {
-                for (uint8 index = 0U; index < FLS_CFG_MAX_BYTES_WRITTEN; index++)
+                for (u8Index = 0U; u8Index < FLS_CFG_MAX_BYTES_WRITTEN; u8Index++)
                 {
                     /* Write data to target address */
                     *Fls_pTargetAddrPtr = *Fls_pSourceAddrPtr;
@@ -155,11 +157,13 @@ static void Fls_HandlingFlsWriteJob(void)
  */
 static void Fls_HandlingFlsReadJob(void)
 {
+    uint8 u8Index;
+
     switch (Fls_eJobStatus)
     {
         case FLS_PROCESSING:
         {
-            for(uint8 index = 0; index < FLS_CFG_MAX_BYTES_READ; index++)
+            for(u8Index = 0; u8Index < FLS_CFG_MAX_BYTES_READ; u8Index++)
             {
                 /* Copy data from flash to user buffer */
                 *Fls_pTargetAddrPtr = *Fls_pSourceAddrPtr;

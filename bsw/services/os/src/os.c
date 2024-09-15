@@ -1,7 +1,7 @@
 #include "os.h"
 
 static Gpio_GpioCfgType led10;
-static uint32 Os_u32SystemTick;
+static uint16 Os_u16SystemTick;
 
 #if (OS_CFG_TASK_1MS == STD_ENABLED)
 static uint8    Os_u8Task1msTick;
@@ -25,7 +25,7 @@ static uint8    Os_u8Task100msTick;
  */
 static void Os_InitTimerTicks(void)
 {
-    Os_u32SystemTick      = 0U;
+    Os_u16SystemTick      = 0U;
 
 #if (OS_CFG_TASK_1MS == STD_ENABLED)
     Os_u8Task1msTick     = 0U;
@@ -182,7 +182,7 @@ void __attribute__((weak)) Os_ApplicationTask(void)
  */
 inline void Os_ProcessTiming(void)
 {
-    Os_u32SystemTick++;
+    Os_u16SystemTick++;
 
 #if (OS_CFG_TASK_1MS == STD_ENABLED)
     Os_u8Task1msTick++;

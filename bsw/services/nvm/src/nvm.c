@@ -195,7 +195,10 @@ void Nvm_InitFunction(void)
     Nvm_eJob            = NVM_JOB_NONE;
     Nvm_ePreJob         = NVM_JOB_NONE;
 
-    Nvm_ReadAllNvmBlock();
+    while (Nvm_bIsDataReady == FALSE)
+    {
+        Nvm_ReadAllNvmBlock();
+    }
 }
 
 /**
@@ -232,6 +235,10 @@ void Nvm_MainFunction(void)
                     /* Data is written. No job is pending. Release writing job */
                     Nvm_ChangeCurJobDoing(NVM_JOB_NONE);
                     Nvm_eBlockDataDoing = NVM_NONE;
+
+                    /* Reset data change notification */
+                    Nvm_bIsDTCChange    = FALSE;
+                    Nvm_bIsPrjDatChange = FALSE;
                 }
             }
 

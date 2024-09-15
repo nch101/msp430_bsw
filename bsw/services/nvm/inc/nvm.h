@@ -18,7 +18,7 @@ typedef enum __attribute__((packed))
     NVM_JOB_WAITING,
 } Nvm_JobType;
 
-#define NVM_READING_FLASH_DATA()            while (Fls_GetStatus != FLS_IDLE) { Fls_MainFunction(); }
+#define NVM_READING_FLASH_DATA()            while (Fls_GetStatus() != FLS_IDLE) { Fls_MainFunction(); }
 
 extern uint8 Nvm_GetDataById(Nvm_DataType eDataType, uint8 u8DataID);
 extern void Nvm_SetDataById(Nvm_DataType eDataType, uint8 u8DataID, uint8 *pDataPtr);
