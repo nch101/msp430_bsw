@@ -24,6 +24,16 @@ SIZE            := msp430-elf-size
 AR              := msp430-elf-ar
 LD              := msp430-elf-ld
 
+############################ Define list ############################
+# Define list
+DEFINES_LIST    :=      \
+    DEPRECATED          \
+    PRINTF_DISABLE_SUPPORT_FLOAT        \
+    PRINTF_DISABLE_SUPPORT_EXPONENTIAL  \
+    PRINTF_DISABLE_SUPPORT_LONG_LONG    \
+    PRINTF_DISABLE_SUPPORT_PTRDIFF_T    \
+
+DEFINES         := $(addprefix -D, $(DEFINES_LIST))
 ############################ Source list ############################
 # C files list
 C_SOURCES_LIST  :=      \
@@ -35,6 +45,8 @@ C_SOURCES_LIST  :=      \
     bsw/drivers/wdt/src/wdt.c   \
     bsw/services/os/src/os.c    \
     bsw/services/nvm/src/nvm.c  \
+    bsw/services/debug/src/debug.c \
+    bsw/libs/printf/printf.c    \
 
 ############################ Include list ############################
 # C include list
@@ -52,10 +64,13 @@ C_INCLUDES_LIST :=          \
     bsw/drivers/uart/cfg    \
     bsw/drivers/wdt/inc     \
     bsw/drivers/wdt/cfg     \
+    bsw/services/debug/inc  \
+    bsw/services/debug/cfg  \
     bsw/services/os/inc     \
     bsw/services/os/cfg     \
     bsw/services/nvm/inc    \
     bsw/services/nvm/cfg    \
+    bsw/libs/printf         \
 
 C_INCLUDES      := $(addprefix -I, $(C_INCLUDES_LIST))
 
@@ -77,7 +92,7 @@ LIB_FILES       :=
 
 ############################### Flags ###############################
 # C flags
-CFLAGS          := -Os -D__$(DEVICE)__ -mmcu=$(DEVICE) -g -ffunction-sections -fdata-sections -DDEPRECATED -Wall
+CFLAGS          := -Os -D__$(DEVICE)__ -mmcu=$(DEVICE) -g -ffunction-sections -fdata-sections $(DEFINES) -Wall
 
 # LD flags
 LDFLAGS         := -T$(LD_FILES) -L$(GCC_MSP_INC_DIR) $(LIB_FILES) -mmcu=$(DEVICE) -g -Wl,--gc-sections -Wl,-Map=build/$(TARGET_NAME).map

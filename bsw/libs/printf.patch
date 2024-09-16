@@ -1,0 +1,59 @@
+diff --git a/src/printf/printf.c b/src/printf/printf.c
+index e47bac6..0ed2c64 100644
+--- a/src/printf/printf.c
++++ b/src/printf/printf.c
+@@ -43,7 +43,7 @@
+ #include "printf_config.h"
+ #endif
+ 
+-#include <printf/printf.h>
++#include <printf.h>
+ 
+ #ifdef __cplusplus
+ #include <cstdint>
+@@ -79,12 +79,12 @@
+ 
+ // Support for the decimal notation floating point conversion specifiers (%f, %F)
+ #ifndef PRINTF_SUPPORT_DECIMAL_SPECIFIERS
+-#define PRINTF_SUPPORT_DECIMAL_SPECIFIERS 1
++#define PRINTF_SUPPORT_DECIMAL_SPECIFIERS 0
+ #endif
+ 
+ // Support for the exponential notation floating point conversion specifiers (%e, %g, %E, %G)
+ #ifndef PRINTF_SUPPORT_EXPONENTIAL_SPECIFIERS
+-#define PRINTF_SUPPORT_EXPONENTIAL_SPECIFIERS 1
++#define PRINTF_SUPPORT_EXPONENTIAL_SPECIFIERS 0
+ #endif
+ 
+ // Support for the length write-back specifier (%n)
+@@ -99,7 +99,7 @@
+ 
+ // Default choice of type to use for internal floating-point computations
+ #ifndef PRINTF_USE_DOUBLE_INTERNALLY
+-#define PRINTF_USE_DOUBLE_INTERNALLY  1
++#define PRINTF_USE_DOUBLE_INTERNALLY  0
+ #endif
+ 
+ // According to the C languages standard, printf() and related functions must be able to print any
+@@ -113,7 +113,7 @@
+ // Support for the long long integral types (with the ll, z and t length modifiers for specifiers
+ // %d,%i,%o,%x,%X,%u, and with the %p specifier).
+ #ifndef PRINTF_SUPPORT_LONG_LONG
+-#define PRINTF_SUPPORT_LONG_LONG 1
++#define PRINTF_SUPPORT_LONG_LONG 0
+ #endif
+ 
+ // The number of terms in a Taylor series expansion of log_10(x) to
+@@ -461,10 +461,11 @@ static printf_size_t atou_(const char** str)
+ static void out_rev_(output_gadget_t* output, const char* buf, printf_size_t len, printf_size_t width, printf_flags_t flags)
+ {
+   const printf_size_t start_pos = output->pos;
++  printf_size_t i;
+ 
+   // pad spaces up to given width
+   if (!(flags & FLAGS_LEFT) && !(flags & FLAGS_ZEROPAD)) {
+-    for (printf_size_t i = len; i < width; i++) {
++    for (i = len; i < width; i++) {
+       putchar_via_gadget(output, ' ');
+     }
+   }

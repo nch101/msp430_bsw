@@ -1,7 +1,19 @@
 #ifndef CFG_TYPES_H
 #define CFG_TYPES_H
 
+/****************************************** Debug ******************************************/
+
+/**
+ * @brief Debug level enum configuration
+ */
+#define DEBUG_SEL_OFF                       0
+#define DEBUG_SEL_FATAL_LEVEL               1
+#define DEBUG_SEL_ERROR_LEVEL               2
+#define DEBUG_SEL_WARN_LEVEL                3
+#define DEBUG_SEL_INFO_LEVEL                4
+
 /**************************************** Watchdog timer *************************************/
+
 /**
  * @brief WDT timeout enum configuration
 */

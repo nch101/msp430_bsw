@@ -69,6 +69,10 @@ static void Os_InitFunction(void)
     Uart_InitFunction();
 #endif /* (BSW_CFG_UART_FUNCTION == STD_ENABLED) */
 
+#if (BSW_CFG_DEBUG_FUNCTION == STD_ENABLED)
+    Debug_InitFunction();
+#endif /* (BSW_CFG_DEBUG_FUNCTION == STD_ENABLED) */
+
 #if (BSW_CFG_GPIO_FUNCTION == STD_ENABLED)
     Gpio_InitFunction();
 #endif /* (BSW_CFG_GPIO_FUNCTION == STD_ENABLED) */
@@ -95,7 +99,9 @@ static void Os_IdleTask(void)
  */
 static void Os_BackgroundTask(void)
 {
-
+#if (BSW_CFG_UART_FUNCTION == STD_ENABLED)
+    Uart_MainFunction();
+#endif /* (BSW_CFG_UART_FUNCTION == STD_ENABLED) */
 }
 #endif /* (OS_CFG_BACKGROUND_TASK == STD_ENABLED) */
 
@@ -106,11 +112,9 @@ static void Os_BackgroundTask(void)
  */
 static void Os_Task_1ms(void)
 {
-
-#if (BSW_CFG_UART_FUNCTION == STD_ENABLED)
-    Uart_MainFunction()
-#endif /* (BSW_CFG_UART_FUNCTION == STD_ENABLED) */
-
+#if (BSW_CFG_DEBUG_FUNCTION == STD_ENABLED)
+    Debug_MainFunction();
+#endif /* (BSW_CFG_DEBUG_FUNCTION == STD_ENABLED) */
 }
 #endif /* (OS_CFG_TASK_1MS == STD_ENABLED) */
 

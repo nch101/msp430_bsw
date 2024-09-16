@@ -1,6 +1,7 @@
 #ifndef OS_H
 #define OS_H
 #include "os_cfg.h"
+#include "os_api.h"
 
 #include "fls.h"
 #include "gpt.h"
@@ -9,6 +10,7 @@
 #include "gpio.h"
 #include "wdt.h"
 #include "nvm.h"
+#include "debug.h"
 
 #define Os_MainFunction()                   int main(void)
 
