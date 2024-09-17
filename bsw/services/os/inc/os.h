@@ -9,8 +9,9 @@
 #include "uart.h"
 #include "gpio.h"
 #include "wdt.h"
-#include "nvm.h"
 #include "debug.h"
+#include "log.h"
+#include "nvm.h"
 
 #define Os_MainFunction()                   int main(void)
 

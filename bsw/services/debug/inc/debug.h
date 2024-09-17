@@ -50,6 +50,18 @@ extern void Debug_LogMessage(const Debug_LevelType eLevel, const Debug_ModuleNam
 extern void Debug_MainFunction(void);
 extern void Debug_InitFunction(void);
 
+#else
+#define DEBUG_FATAL(module, msg)
+#define DEBUG_FATAL_U16_ARG(module, msg, arg)
+
+#define DEBUG_ERROR(module, msg)
+#define DEBUG_ERROR_U16_ARG(module, msg, arg)
+
+#define DEBUG_WARN(module, msg)
+#define DEBUG_WARN_U16_ARG(module, msg, arg)
+
+#define DEBUG_INFO(module, msg)
+#define DEBUG_INFO_U16_ARG(module, msg, arg)
 
 #endif /* (BSW_CFG_DEBUG_FUNCTION == STD_ENABLED) */
 #endif /* DEBUG_H */

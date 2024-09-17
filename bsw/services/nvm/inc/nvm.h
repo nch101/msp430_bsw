@@ -3,6 +3,7 @@
 
 #include "nvm_cfg.h"
 
+#if (BSW_CFG_NVM_FUNCTION == STD_ENABLED)
 typedef enum __attribute__((packed))
 {
     NVM_NONE,
@@ -25,4 +26,5 @@ extern void Nvm_SetDataById(Nvm_DataType eDataType, uint8 u8DataID, uint8 *pData
 extern void Nvm_InitFunction(void);
 extern void Nvm_MainFunction(void);
 
+#endif /* (BSW_CFG_NVM_FUNCTION == STD_ENABLED) */
 #endif /* NVM_H */

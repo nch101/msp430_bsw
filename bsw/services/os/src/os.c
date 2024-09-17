@@ -65,6 +65,10 @@ static void Os_InitFunction(void)
     Nvm_InitFunction();
 #endif /* (BSW_CFG_NVM_FUNCTION == STD_ENABLED) */
 
+#if (BSW_CFG_LOG_FUNCTION == STD_ENABLED)
+    Log_InitFunction();
+#endif /* (BSW_CFG_LOG_FUNCTION == STD_ENABLED) */
+
 #if (BSW_CFG_UART_FUNCTION == STD_ENABLED)
     Uart_InitFunction();
 #endif /* (BSW_CFG_UART_FUNCTION == STD_ENABLED) */

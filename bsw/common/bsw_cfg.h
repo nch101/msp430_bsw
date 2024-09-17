@@ -31,6 +31,11 @@
 #define BSW_CFG_DEBUG_FUNCTION              STD_DISABLED
 
 /**
+ * @brief Log service enable
+ */
+#define BSW_CFG_LOG_FUNCTION                STD_DISABLED
+
+/**
  * @brief Max number of project configurations
  */
 #define BSW_MAX_PROJECT_CONFIG              5U

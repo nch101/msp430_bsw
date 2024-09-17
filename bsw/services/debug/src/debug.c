@@ -1,8 +1,8 @@
-#include "printf.h"
 #include "uart.h"
 #include "debug.h"
 
 #if (BSW_CFG_DEBUG_FUNCTION == STD_ENABLED)
+#include "printf.h"
 
 static char Debug_aMsgBuffer[DEBUG_CFG_MAX_BUFFER][DEBUG_CFG_MAX_BUFFER_LEN] = { 0U };
 static uint8 Debug_aLength[DEBUG_CFG_MAX_BUFFER] = { 0U };
