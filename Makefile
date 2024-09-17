@@ -28,10 +28,6 @@ LD              := msp430-elf-ld
 # Define list
 DEFINES_LIST    :=      \
     DEPRECATED          \
-    PRINTF_DISABLE_SUPPORT_FLOAT        \
-    PRINTF_DISABLE_SUPPORT_EXPONENTIAL  \
-    PRINTF_DISABLE_SUPPORT_LONG_LONG    \
-    PRINTF_DISABLE_SUPPORT_PTRDIFF_T    \
 
 DEFINES         := $(addprefix -D, $(DEFINES_LIST))
 ############################ Source list ############################
@@ -46,7 +42,7 @@ C_SOURCES_LIST  :=      \
     bsw/services/os/src/os.c    \
     bsw/services/nvm/src/nvm.c  \
     bsw/services/debug/src/debug.c \
-    bsw/libs/printf/printf.c    \
+    bsw/libs/printf/src/printf/printf.c \
 
 ############################ Include list ############################
 # C include list
@@ -70,7 +66,7 @@ C_INCLUDES_LIST :=          \
     bsw/services/os/cfg     \
     bsw/services/nvm/inc    \
     bsw/services/nvm/cfg    \
-    bsw/libs/printf         \
+    bsw/libs/printf/src/printf  \
 
 C_INCLUDES      := $(addprefix -I, $(C_INCLUDES_LIST))
 

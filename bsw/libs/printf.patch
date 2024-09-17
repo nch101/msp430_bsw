@@ -1,5 +1,5 @@
 diff --git a/src/printf/printf.c b/src/printf/printf.c
-index e47bac6..0ed2c64 100644
+index e47bac6..9c393e7 100644
 --- a/src/printf/printf.c
 +++ b/src/printf/printf.c
 @@ -43,7 +43,7 @@
@@ -11,7 +11,7 @@ index e47bac6..0ed2c64 100644
  
  #ifdef __cplusplus
  #include <cstdint>
-@@ -79,12 +79,12 @@
+@@ -79,17 +79,17 @@
  
  // Support for the decimal notation floating point conversion specifiers (%f, %F)
  #ifndef PRINTF_SUPPORT_DECIMAL_SPECIFIERS
@@ -26,6 +26,12 @@ index e47bac6..0ed2c64 100644
  #endif
  
  // Support for the length write-back specifier (%n)
+ #ifndef PRINTF_SUPPORT_WRITEBACK_SPECIFIER
+-#define PRINTF_SUPPORT_WRITEBACK_SPECIFIER 1
++#define PRINTF_SUPPORT_WRITEBACK_SPECIFIER 0
+ #endif
+ 
+ // Default precision for the floating point conversion specifiers (the C standard sets this at 6)
 @@ -99,7 +99,7 @@
  
  // Default choice of type to use for internal floating-point computations
@@ -57,3 +63,20 @@ index e47bac6..0ed2c64 100644
        putchar_via_gadget(output, ' ');
      }
    }
+diff --git a/src/printf/printf.h b/src/printf/printf.h
+index 48cbade..d50411d 100644
+--- a/src/printf/printf.h
++++ b/src/printf/printf.h
+@@ -64,7 +64,7 @@ ATTR_PRINTF((one_based_format_index), 0)
+ #endif
+ 
+ #ifndef PRINTF_ALIAS_STANDARD_FUNCTION_NAMES_SOFT
+-#define PRINTF_ALIAS_STANDARD_FUNCTION_NAMES_SOFT 0
++#define PRINTF_ALIAS_STANDARD_FUNCTION_NAMES_SOFT 1
+ #endif
+ 
+ #ifndef PRINTF_ALIAS_STANDARD_FUNCTION_NAMES_HARD
+NAMES_SOFT 1
+ #endif
+ 
+ #ifndef PRINTF_ALIAS_STANDARD_FUNCTION_NAMES_HARD

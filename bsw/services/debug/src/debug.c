@@ -11,24 +11,34 @@ static uint8 Debug_u8ReadBufferIdx;
 static uint8 Debug_u8AvailBuffer;
 static Debug_JobType Debug_eJob;
 
-void Debug_LogMessage(const char *pLevelPtr, const char *pFormatPtr, ...)
+void Debug_LogMessage( \
+            const Debug_LevelType   eLevel,  \
+            const Debug_ModuleName  eModule, \
+            const uint16            u16Line, \
+            const Debug_MessageID   eMessage,\
+            const uint16            u16Num   \
+        )
 {
-    va_list args;
-    va_start(args, pFormatPtr);
-
     if (Debug_u8AvailBuffer > 0U)
     {
-        /* Push message to MsgBuffer */
-        Debug_aLength[Debug_u8WriteBufferIdx] = sprintf( \
-            Debug_aMsgBuffer[Debug_u8WriteBufferIdx], \
-            "%s", \
-            pLevelPtr);
-
-        Debug_aLength[Debug_u8WriteBufferIdx] += vsnprintf( \
-                &(Debug_aMsgBuffer[Debug_u8WriteBufferIdx][Debug_aLength[Debug_u8WriteBufferIdx]]), \
-                DEBUG_CFG_MAX_BUFFER_LEN, \
-                pFormatPtr, \
-                args);
+        if (u16Num == 0xFFU)
+        {
+            /* Build debug message */
+            Debug_aLength[Debug_u8WriteBufferIdx] = snprintf( \
+                                                        Debug_aMsgBuffer[Debug_u8WriteBufferIdx],   \
+                                                        DEBUG_CFG_MAX_BUFFER_LEN,                   \
+                                                        "%d:%d:%d:%d\r\n",                          \
+                                                        eLevel, eModule, u16Line, eMessage);
+        }
+        else 
+        {
+            /* Build debug message with 1 uint16 argument */
+            Debug_aLength[Debug_u8WriteBufferIdx] = snprintf( \
+                                                        Debug_aMsgBuffer[Debug_u8WriteBufferIdx],   \
+                                                        DEBUG_CFG_MAX_BUFFER_LEN,                   \
+                                                        "%d:%d:%d:%d:%d\r\n",                       \
+                                                        eLevel, eModule, u16Line, eMessage, u16Num);
+        }
 
         Debug_u8AvailBuffer--;
         Debug_u8WriteBufferIdx++;
@@ -39,8 +49,6 @@ void Debug_LogMessage(const char *pLevelPtr, const char *pFormatPtr, ...)
     {
         /* Queue is full. Abort */
     }
-
-    va_end(args);
 }
 
 void Debug_MainFunction(void)
@@ -54,7 +62,7 @@ void Debug_MainFunction(void)
             if (Debug_u8AvailBuffer < DEBUG_CFG_MAX_BUFFER)
             {
                 bIsTriggerSucc = Uart_TransmitData((uint8*) Debug_aMsgBuffer[Debug_u8ReadBufferIdx], Debug_aLength[Debug_u8ReadBufferIdx]);
-                
+
                 if (bIsTriggerSucc == STD_OK)
                 {
                     Debug_eJob = DEBUG_JOB_SENDING;
@@ -69,8 +77,10 @@ void Debug_MainFunction(void)
             if (Uart_GetTransmissionStatus() == UART_IDLE)
             {
                 Debug_eJob = DEBUG_JOB_IDLE;
+
                 Debug_u8AvailBuffer++;
                 Debug_u8ReadBufferIdx++;
+
                 DEBUG_LIMIT_BUFFER_IDX(Debug_u8ReadBufferIdx, DEBUG_CFG_MAX_BUFFER);
             }
 

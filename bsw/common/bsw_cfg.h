@@ -8,12 +8,12 @@
 /**
  * @brief UART driver enable
  */
-#define BSW_CFG_UART_FUNCTION               STD_ENABLED
+#define BSW_CFG_UART_FUNCTION               STD_DISABLED
 
 /**
  * @brief Flash driver enable
  */
-#define BSW_CFG_FLS_FUNCTION                STD_ENABLED
+#define BSW_CFG_FLS_FUNCTION                STD_DISABLED
 
 /**
  * @brief GPIO driver enable
@@ -23,12 +23,12 @@
 /**
  * @brief NVM service enable
  */
-#define BSW_CFG_NVM_FUNCTION                STD_ENABLED
+#define BSW_CFG_NVM_FUNCTION                STD_DISABLED
 
 /**
  * @brief Debug service enable
  */
-#define BSW_CFG_DEBUG_FUNCTION              STD_ENABLED
+#define BSW_CFG_DEBUG_FUNCTION              STD_DISABLED
 
 /**
  * @brief Max number of project configurations
