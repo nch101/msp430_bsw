@@ -12,6 +12,7 @@
 #include "debug.h"
 #include "log.h"
 #include "nvm.h"
+#include "timer.h"
 
 #define Os_MainFunction()                   int main(void)
 

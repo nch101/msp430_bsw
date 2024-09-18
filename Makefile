@@ -39,10 +39,11 @@ C_SOURCES_LIST  :=      \
     bsw/drivers/mcu/src/mcu.c   \
     bsw/drivers/uart/src/uart.c \
     bsw/drivers/wdt/src/wdt.c   \
-    bsw/services/os/src/os.c    \
+    bsw/services/debug/src/debug.c      \
     bsw/services/log/src/log.c  \
-    bsw/services/debug/src/debug.c \
     bsw/services/nvm/src/nvm.c  \
+    bsw/services/os/src/os.c    \
+    bsw/services/timer/src/timer.c      \
     bsw/libs/printf/src/printf/printf.c \
 
 ############################ Include list ############################
@@ -65,10 +66,12 @@ C_INCLUDES_LIST :=          \
     bsw/services/debug/cfg  \
     bsw/services/log/inc    \
     bsw/services/log/cfg    \
-    bsw/services/os/inc     \
-    bsw/services/os/cfg     \
     bsw/services/nvm/inc    \
     bsw/services/nvm/cfg    \
+    bsw/services/os/inc     \
+    bsw/services/os/cfg     \
+    bsw/services/timer/inc  \
+    bsw/services/timer/cfg  \
     bsw/libs/printf/src/printf  \
 
 C_INCLUDES      := $(addprefix -I, $(C_INCLUDES_LIST))

@@ -56,7 +56,11 @@ static void Os_InitFunction(void)
     Mcu_InitClock();
     Gpt_InitFunction();
     Mcu_InitOperatingMode();
-    
+
+#if (BSW_CFG_TIMER_FUNCTION == STD_ENABLED)
+    Timer_InitFunction();
+#endif /* (BSW_CFG_TIMER_FUNCTION = STD_ENABLED) */
+
 #if (BSW_CFG_FLS_FUNCTION == STD_ENABLED)
     Fls_InitFunction();
 #endif /* (BSW_CFG_FLS_FUNCTION == STD_ENABLED) */
@@ -208,6 +212,15 @@ inline void Os_ProcessTiming(void)
     Os_u8Task100msTick++;
 #endif /* (OS_CFG_TASK_100MS == STD_ENABLED) */
 
+}
+
+/**
+ * @brief       Get system tick timer
+ * @retval      Os_u16SystemTick
+ */
+uint16 Os_GetSysTick(void)
+{
+    return Os_u16SystemTick;
 }
 
 /**
