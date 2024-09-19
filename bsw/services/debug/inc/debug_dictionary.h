@@ -3,10 +3,10 @@
 
 typedef enum __attribute__((packed))
 {
-    DEBUG_FATAL,
-    DEBUG_ERROR,
-    DEBUG_WARN,
-    DEBUG_INFO,
+    FATAL,
+    ERROR,
+    WARN,
+    INFO,
 } Debug_LevelType;
 
 typedef enum __attribute__((packed))
