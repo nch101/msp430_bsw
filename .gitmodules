@@ -1,3 +1,0 @@
-[submodule "bsw/libs/printf"]
-	path = bsw/libs/printf
-	url = https://github.com/eyalroz/printf.git

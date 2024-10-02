@@ -2,10 +2,12 @@ import sys
 import os
 import re
 import serial
+import struct
+import datetime
 
-DEFAULT_PORT            = 'COM5'
+DEFAULT_PORT            = 'COM6'
 DEFAULT_TIMEOUT         = 1
-DEFAULT_BAUDRATE        = 19200
+DEFAULT_BAUDRATE        = 9600
 DICTIONARY_FILE_PATH    = "../bsw/services/debug/inc/debug_dictionary.h"
 
 # Get the current working directory
@@ -47,17 +49,20 @@ def parse_dictionary_file(dictionary_file):
 
 
 def decode_message(rawData):
-    integer_array = []
+    decoded_message = []
 
-    data_list = rawData.decode().split()
+    if (len(rawData) == 8):
+        format_string   = "<HHBB"   # 2 uint16, 2 uint8
+    elif (len(rawData) == 10):
+        format_string   = "<HHHBB"  # 3 uint16, 2 uint8
+    else:
+        return
 
-    try:
-        for value in data_list:
-            integer_array.append(int(value))
-    except ValueError:
-        print("Invalid data received:", value)
+    unpacked_data   = struct.unpack(format_string, rawData[:-2])
 
-    return integer_array
+    decoded_message = list(unpacked_data)
+
+    return decoded_message
 
 
 def main():
@@ -86,10 +91,11 @@ def main():
         while True:
             nums = decode_message(ser.readline())
 
+            now = datetime.datetime.now()
             if (len(nums) == 4):
-                f.write("[%s][%s.c:%s][%s]\n" %(levels[nums[0]], modules[nums[1]].lower(), nums[2], messages[nums[3]]))
+                f.write("[%s] [%s][%s.c:%s][%s]\n" %(now.strftime("%Y-%m-%d %H:%M:%S:%f")[:-3], levels[nums[2]], modules[nums[3]].lower(), nums[1], messages[nums[0]]))
             elif (len(nums) == 5):
-                f.write("[%s][%s.c:%s][%s][%s]\n" %(levels[nums[0]], modules[nums[1]].lower(), nums[2], messages[nums[3]], nums[4]))
+                f.write("[%s] [%s][%s.c:%s][%s][%s]\n" %(now.strftime("%Y-%m-%d %H:%M:%S:%f")[:-3], levels[nums[3]], modules[nums[4]].lower(), nums[2], messages[nums[1]], nums[0]))
 
 
 main()

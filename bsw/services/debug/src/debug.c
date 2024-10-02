@@ -27,7 +27,7 @@ void Debug_LogMessage( \
         Debug_aMsgBuffer[Debug_u8WriteBufferIdx].msgID  = eMessage;
         Debug_aMsgBuffer[Debug_u8WriteBufferIdx].eol[0] = '\r';
         Debug_aMsgBuffer[Debug_u8WriteBufferIdx].eol[1] = '\n';
-        Debug_aMsgBuffer[Debug_u8WriteBufferIdx].length = 9U;
+        Debug_aMsgBuffer[Debug_u8WriteBufferIdx].length = 8U;
 
         if (bIntArg == TRUE)
         {
@@ -57,7 +57,14 @@ void Debug_MainFunction(void)
         {
             if (Debug_u8AvailBuffer < DEBUG_CFG_MAX_BUFFER)
             {
-                bIsTriggerSucc = Uart_TransmitData((uint8*) &Debug_aMsgBuffer[Debug_u8ReadBufferIdx], Debug_aMsgBuffer[Debug_u8ReadBufferIdx].length);
+                if (Debug_aMsgBuffer[Debug_u8ReadBufferIdx].length == 8U)
+                {
+                    bIsTriggerSucc = Uart_TransmitData((uint8*) &Debug_aMsgBuffer[Debug_u8ReadBufferIdx].msgID, Debug_aMsgBuffer[Debug_u8ReadBufferIdx].length);
+                }
+                else
+                {
+                    bIsTriggerSucc = Uart_TransmitData((uint8*) &Debug_aMsgBuffer[Debug_u8ReadBufferIdx], Debug_aMsgBuffer[Debug_u8ReadBufferIdx].length);
+                }
 
                 if (bIsTriggerSucc == STD_OK)
                 {

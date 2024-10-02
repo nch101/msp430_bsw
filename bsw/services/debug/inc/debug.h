@@ -8,9 +8,9 @@
 
 typedef struct
 {
+    uint16              arg;
     Debug_MessageID     msgID;
     uint16              line;
-    uint16              arg;
     Debug_LevelType     level;
     Debug_ModuleName    module;
     char                eol[2];

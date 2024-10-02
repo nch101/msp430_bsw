@@ -28,7 +28,7 @@ void Timer_InitFunction(void)
 {
     uint8 u8Index;
 
-    for (u8Index = TIMER_CFG_MAX_NUM_TIMER - 1U; u8Index >= 0; u8Index--)
+    for (u8Index = 0; u8Index < TIMER_CFG_MAX_NUM_TIMER; u8Index++)
     {
         Timer_aTimeout[u8Index] = 0U;
         Timer_aTick[u8Index]    = 0U;
