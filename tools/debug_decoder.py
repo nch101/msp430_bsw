@@ -3,9 +3,9 @@ import os
 import re
 import serial
 
-PORT                    = 'COM5'
-TIMEOUT                 = 1
-BAUDRATE                = 19200
+DEFAULT_PORT            = 'COM5'
+DEFAULT_TIMEOUT         = 1
+DEFAULT_BAUDRATE        = 19200
 DICTIONARY_FILE_PATH    = "../bsw/services/debug/inc/debug_dictionary.h"
 
 # Get the current working directory
@@ -14,25 +14,7 @@ dictionary_file = os.path.join(current_dir, DICTIONARY_FILE_PATH)
 
 def usage():
     print('Usage:')
-    print('  python debug_decoder.py <Path-to-debug-file> <Path-to-decoded-file>')
-
-
-def is_arg_valid():
-    if len(sys.argv) < 3:
-        print('Missing one more args')
-        usage()
-        return False, "", ""
-
-    # Get file path
-    debug_file  = os.path.realpath(sys.argv[2])
-    decode_file = os.path.realpath(sys.argv[3])
-
-    if not os.path.exists(debug_file):
-        print('ERROR: The debug file {} does not exists.'.format(debug_file))
-        usage()
-        return False, "", ""
-
-    return True, debug_file, decode_file
+    print('  python debug_decoder.py -p <PORT> -b <BAUDRATE> -t <TIMEOUT>')
 
 
 def parse_dictionary_file(dictionary_file):
@@ -64,43 +46,50 @@ def parse_dictionary_file(dictionary_file):
     return levels, modules, messages
 
 
-def decode_message(line, levels, modules, messages):
-    paths = line.split(":")
-    nums = list(map(int, paths))
+def decode_message(rawData):
+    integer_array = []
 
-    if (len(nums) == 4):
-        return ("[%s][%s.c:%s][%s]\n" %(levels[nums[0]], modules[nums[1]].lower(), nums[2], messages[nums[3]]))
-    else:
-        return ("[%s][%s.c:%s][%s][%s]\n" %(levels[nums[0]], modules[nums[1]].lower(), nums[2], messages[nums[3]], nums[4]))
+    data_list = rawData.decode().split()
+
+    try:
+        for value in data_list:
+            integer_array.append(int(value))
+    except ValueError:
+        print("Invalid data received:", value)
+
+    return integer_array
+
 
 def main():
-    decode_data = []
-
     levels, modules, messages = parse_dictionary_file(dictionary_file)
-    option = sys.argv[1]
+    nums = []
 
-    if (option == '-f'):
-        status, debug_file, decode_file = is_arg_valid()
+    port        = DEFAULT_PORT
+    baudrate    = DEFAULT_BAUDRATE
+    timeout     = DEFAULT_TIMEOUT
 
-        if (status == False):
-            exit(0)
+    if (len(sys.argv) > 1):
+        for i in range(1, len(sys.argv)):
+            if (sys.argv[i] == '-p'):
+                port     = sys.argv[i + 1].upper()
+            if (sys.argv[i] == '-b'):
+                baudrate = int(sys.argv[i + 1])
+            if (sys.argv[i] == '-t'):
+                timeout  = int(sys.argv[i + 1])
+            if (sys.argv[i] == '-h'):
+                usage()
+                exit()
 
-        with open(debug_file, 'r') as file:
-            for line in file:
-                decode_data.append(decode_message(line, levels, modules, messages))
+    ser = serial.Serial(port = port, baudrate = baudrate, timeout = timeout)
 
-        with open(decode_file, "w") as file:
-            file.writelines(decode_data)
-    elif (option == "-s"):
-        ser = serial.Serial(port = PORT, bytesize = 8, timeout = TIMEOUT)
-        ser.baudrate = BAUDRATE 
+    with open('decode_message.log', 'w') as f:
+        while True:
+            nums = decode_message(ser.readline())
 
-        while (True):
-            line = ser.readline()
-            print(decode_message(line, levels, modules, messages))
+            if (len(nums) == 4):
+                f.write("[%s][%s.c:%s][%s]\n" %(levels[nums[0]], modules[nums[1]].lower(), nums[2], messages[nums[3]]))
+            elif (len(nums) == 5):
+                f.write("[%s][%s.c:%s][%s][%s]\n" %(levels[nums[0]], modules[nums[1]].lower(), nums[2], messages[nums[3]], nums[4]))
 
-    else:
-        print("Unknown option")
-        exit(0)
 
 main()

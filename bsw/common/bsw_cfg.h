@@ -8,7 +8,7 @@
 /**
  * @brief UART driver enable
  */
-#define BSW_CFG_UART_FUNCTION               STD_DISABLED
+#define BSW_CFG_UART_FUNCTION               STD_ENABLED
 
 /**
  * @brief Flash driver enable
@@ -28,7 +28,7 @@
 /**
  * @brief Debug service enable
  */
-#define BSW_CFG_DEBUG_FUNCTION              STD_DISABLED
+#define BSW_CFG_DEBUG_FUNCTION              STD_ENABLED
 
 /**
  * @brief Log service enable

@@ -44,7 +44,6 @@ C_SOURCES_LIST  :=      \
     bsw/services/nvm/src/nvm.c  \
     bsw/services/os/src/os.c    \
     bsw/services/timer/src/timer.c      \
-    bsw/libs/printf/src/printf/printf.c \
 
 ############################ Include list ############################
 # C include list
@@ -72,7 +71,6 @@ C_INCLUDES_LIST :=          \
     bsw/services/os/cfg     \
     bsw/services/timer/inc  \
     bsw/services/timer/cfg  \
-    bsw/libs/printf/src/printf  \
 
 C_INCLUDES      := $(addprefix -I, $(C_INCLUDES_LIST))
 

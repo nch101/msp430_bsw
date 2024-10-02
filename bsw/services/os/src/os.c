@@ -158,7 +158,10 @@ static void Os_Task_10ms(void)
 static void Os_Task_100ms(void)
 {
     Gpio_TogglePort(&led10);
-
+    DEBUG_INFO(OS, TEST_DEBUG_INFO);
+    DEBUG_INFO(OS, TEST_DEBUG_INFO);
+    DEBUG_INFO(OS, TEST_DEBUG_INFO);
+    DEBUG_INFO(OS, TEST_DEBUG_INFO);
 #if (BSW_CFG_NVM_FUNCTION == STD_ENABLED)
     Nvm_MainFunction();
 #endif /* (BSW_CFG_NVM_FUNCTION == STD_ENABLED) */
