@@ -14,9 +14,6 @@ GCC_MSP_INC_DIR := $(GCC_DIR)/include/msp
 # Standard include directory path
 GCC_STD_INC_DIR := $(GCC_DIR)/msp430-elf/include
 
-# Libraries directory path
-LIB_DIR         := lib/
-
 # Compiler
 CC              := msp430-elf-gcc
 GDB             := msp430-elf-gdb
@@ -90,12 +87,18 @@ LD_FILES        := $(GCC_MSP_INC_DIR)/$(shell echo $(DEVICE) | tr A-Z a-z).ld
 # Libraries
 LIB_FILES       := 
 
+# Library directories list
+LIB_DIR_LIST    :=      \
+    lib/                \
+
+LIB_DIRS        := $(addprefix -L, $(LIB_DIR_LIST)) -L$(GCC_MSP_INC_DIR)
+
 ############################### Flags ###############################
 # C flags
 CFLAGS          := -Os -D__$(DEVICE)__ -mmcu=$(DEVICE) -g -ffunction-sections -fdata-sections $(DEFINES) -Wall
 
 # LD flags
-LDFLAGS         := -T$(LD_FILES) -L$(GCC_MSP_INC_DIR) $(LIB_FILES) -mmcu=$(DEVICE) -g -Wl,--gc-sections -Wl,-Map=build/$(TARGET_NAME).map
+LDFLAGS         := -T$(LD_FILES) $(LIB_DIRS) $(LIB_FILES) -mmcu=$(DEVICE) -g -Wl,--gc-sections -Wl,-Map=build/$(TARGET_NAME).map
 
 ############################### Commands ###############################
 .PHONY: all clean build size debug
@@ -122,8 +125,8 @@ build/$(TARGET_NAME).out: $(C_OBJECTS)
 	@echo Linking objects and generating output binary ...
 	$(CC) $(LDFLAGS) $(C_OBJECTS) -o $@
 
-size: build
-	$(SIZE) build/$(TARGET_NAME).out
+size: build/$(TARGET_NAME).out
+	$(SIZE) $<
 
-debug: build
-	$(GDB) build/$(TARGET_NAME).out
+debug: build/$(TARGET_NAME).out
+	$(GDB) $<
