@@ -2,16 +2,20 @@
 #include "uart.h"
 
 #if (BSW_CFG_UART_FUNCTION == STD_ENABLED)
+#define ENABLE_TX_INTERRUPT()               IE2  |= UCA0TXIE
+#define DISABLE_TX_INTERRUPT()              IE2  &= ~UCA0TXIE
+#define IS_TX_BUFFER_READY()                ((IFG2 & UCA0TXIFG) == UCA0TXIFG)
 
-/* Rx buffer information */
-static uint8 *          Uart_pRxBufferPtr;
-static uint16           Uart_u16RxDataLength;
-static uint16           Uart_u16RxDataIdx;
+#define ENABLE_RX_INTERRUPT()               IE2  |= UCA0RXIE
+#define CLEAR_RX_INTERRUPT_FLAG()           IFG2 &= ~(UCA0RXIFG)
 
-/* Tx buffer information */
-static uint8 const *    Uart_pTxBufferPtr;
-static uint16           Uart_u16TxDataLength;
-static uint16           Uart_u16TxDataIdx;
+/* Rx information */
+static void          (*Uart_pReceiveDataFnCallback)(volatile uint8 *);
+
+/* Tx information */
+static uint8 const * Uart_pTxBufferPtr;
+static uint16        Uart_u16TxDataLength;
+static uint16        Uart_u16TxDataIdx;
 
 /* Transmission status */
 static Uart_StatusType  Uart_eTxStatus;
@@ -26,11 +30,7 @@ static void Uart_HandlingDataTransmission(void)
 {
     if (Uart_u16TxDataIdx < Uart_u16TxDataLength)
     {
-        /* Enable USCI_A0 TX interrupt */
-        IE2 |= UCA0TXIE;
-
-        /* USCI_A0 TX buffer ready? */
-        if (IFG2 & UCA0TXIFG)
+        if (IS_TX_BUFFER_READY())
         {
             UCA0TXBUF = Uart_pTxBufferPtr[Uart_u16TxDataIdx];
             Uart_u16TxDataIdx++;
@@ -40,6 +40,7 @@ static void Uart_HandlingDataTransmission(void)
     {
         /* All data are transmitted. Set Uart status to IDLE */
         Uart_eTxStatus = UART_IDLE;
+        DISABLE_TX_INTERRUPT();
     }
 }
 
@@ -56,8 +57,7 @@ void __attribute__ ((interrupt(USCIAB0TX_VECTOR))) USCI0TX_ISR (void)
 #error Compiler not supported!
 #endif
 {
-    /* Disable USCI_A0 TX interrupt */
-    IE2     &= ~UCA0TXIE;
+    Uart_HandlingDataTransmission();
 }
 
 /**
@@ -73,51 +73,26 @@ void __attribute__ ((interrupt(USCIAB0RX_VECTOR))) USCI0RX_ISR (void)
 #error Compiler not supported!
 #endif
 {
-    /* Check if Rx buffer has space to store data */
-    if (Uart_u16RxDataIdx < Uart_u16RxDataLength)
+    if (Uart_pReceiveDataFnCallback != NULL)
     {
-        Uart_pRxBufferPtr[Uart_u16RxDataIdx] = UCA0RXBUF;
-        Uart_u16RxDataIdx++;
-    }
-    else
-    {
-        /* Need to call Uart_ResetRxDataIndex() to reset Uart_u16RxDataIdx. Do nothing */
+        (*Uart_pReceiveDataFnCallback)(&UCA0RXBUF);
     }
 
-    /* Clear Rx interrupt flag */
-    IFG2    &= ~(UCA0RXIFG);
+    CLEAR_RX_INTERRUPT_FLAG();
 }
 
 /**
- * @brief       Configures receive data buffer
- * @param[in]   pDataPtr        Pointer to receive data buffer
- * @param[in]   u8DataLength    Length of data
- * @retval      STD_NOT_OK - Config not successful, STD_OK - Config successful
+ * @brief       Configures receive data function callback
+ * @param[in]   vFuncCallBack       Pointer to function callback
+ * @retval      None
  */
-Std_StatusType Uart_ConfigReceiveDataBuffer(uint8 * const pDataPtr, const uint8 u8DataLength)
+void Uart_ConfigReceiveDataCallBack(void (*vFuncCallBack)(volatile uint8 *))
 {
-    if (pDataPtr != NULL)
+    if (vFuncCallBack != NULL)
     {
-        Uart_pRxBufferPtr    = pDataPtr;
-        Uart_u16RxDataLength = u8DataLength;
-        Uart_u16RxDataIdx    = 0U;
-
-        /* Enable USCI_A0 RX interrupt */
-        IE2 |= UCA0RXIE;
-
-        return STD_OK;
+        Uart_pReceiveDataFnCallback = vFuncCallBack;
+        ENABLE_RX_INTERRUPT();
     }
-
-    return STD_NOT_OK;
-}
-
-/**
- * @brief       Reset UART reception data index
- * @retval      UART_StatusType
- */
-void Uart_ResetRxDataIndex(void)
-{
-    Uart_u16RxDataIdx = 0U;
 }
 
 /**
@@ -130,7 +105,7 @@ Uart_StatusType Uart_GetTransmissionStatus(void)
 }
 
 /**
- * @brief       Trigger data transmission. Data shall be transmit in task
+ * @brief       Trigger data transmission. Data shall be transmit in Tx interrupt
  * @param[in]   pDataPtr        Pointer to buffer
  * @param[in]   u8DataLength    Length of data
  * @retval      STD_NOT_OK - Trigger not successful, STD_OK - Trigger successful
@@ -144,6 +119,9 @@ Std_StatusType Uart_TransmitData(uint8 const * const pDataPtr, const uint8 u8Dat
         Uart_u16TxDataLength = u8DataLength;
         Uart_u16TxDataIdx    = 0U;
         Uart_eTxStatus       = UART_BUSY;
+
+        ENABLE_TX_INTERRUPT();
+        Uart_HandlingDataTransmission();
 
         return STD_OK;
     }
@@ -169,15 +147,13 @@ void Uart_InitFunction(void)
     UCA0BR0     = UART_CFG_UCBR0_REG;
     UCA0BR1     = UART_CFG_UCBR1_REG;
     UCA0MCTL    = UART_CFG_UCBRSx_REG;
-}
 
-/**
- * @brief       UART main function
- * @retval      None
- */
-void Uart_MainFunction(void)
-{
-    Uart_HandlingDataTransmission();
+    /* Initialize internal variables */
+    Uart_pReceiveDataFnCallback = NULL;
+    Uart_pTxBufferPtr           = NULL;
+    Uart_u16TxDataLength        = 0U;
+    Uart_u16TxDataIdx           = 0U;
+    Uart_eTxStatus              = UART_IDLE;
 }
 
 #endif /* (BSW_CFG_UART_FUNCTION == STD_ENABLED) */
