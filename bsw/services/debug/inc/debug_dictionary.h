@@ -19,6 +19,7 @@ typedef enum __attribute__((packed))
     WDT,
     NVM,
     OS,
+    BUTTON,
 } Debug_ModuleName;
 
 typedef enum
@@ -27,6 +28,7 @@ typedef enum
     TEST_DEBUG_ERROR,
     TEST_DEBUG_WARN,
     TEST_DEBUG_INFO,
+    DEBOUNCING_TIME_TOO_SHORT,
 } Debug_MessageID;
 
 #endif /* DEBUG_DICTIONARY_H */

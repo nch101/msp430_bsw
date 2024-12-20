@@ -30,16 +30,17 @@ DEFINES         := $(addprefix -D, $(DEFINES_LIST))
 ############################ Source list ############################
 # C files list
 C_SOURCES_LIST  :=      \
-    bsw/drivers/fls/src/fls.c   \
-    bsw/drivers/gpio/src/gpio.c \
-    bsw/drivers/gpt/src/gpt.c   \
-    bsw/drivers/mcu/src/mcu.c   \
-    bsw/drivers/uart/src/uart.c \
-    bsw/drivers/wdt/src/wdt.c   \
+    bsw/drivers/fls/src/fls.c           \
+    bsw/drivers/gpio/src/gpio.c         \
+    bsw/drivers/gpt/src/gpt.c           \
+    bsw/drivers/mcu/src/mcu.c           \
+    bsw/drivers/uart/src/uart.c         \
+    bsw/drivers/wdt/src/wdt.c           \
+    bsw/services/button/src/button.c    \
     bsw/services/debug/src/debug.c      \
-    bsw/services/log/src/log.c  \
-    bsw/services/nvm/src/nvm.c  \
-    bsw/services/os/src/os.c    \
+    bsw/services/log/src/log.c          \
+    bsw/services/nvm/src/nvm.c          \
+    bsw/services/os/src/os.c            \
     bsw/services/timer/src/timer.c      \
 
 ############################ Include list ############################
@@ -58,6 +59,8 @@ C_INCLUDES_LIST :=          \
     bsw/drivers/uart/cfg    \
     bsw/drivers/wdt/inc     \
     bsw/drivers/wdt/cfg     \
+    bsw/services/button/inc \
+    bsw/services/button/cfg \
     bsw/services/debug/inc  \
     bsw/services/debug/cfg  \
     bsw/services/log/inc    \

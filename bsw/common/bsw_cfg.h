@@ -41,6 +41,11 @@
 #define BSW_CFG_TIMER_FUNCTION              STD_DISABLED
 
 /**
+ * @brief Button service enable
+ */
+#define BSW_CFG_BUTTON_FUNCTION             STD_DISABLED
+
+/**
  * @brief Max number of project configurations
  */
 #define BSW_MAX_PROJECT_CONFIG              5U
