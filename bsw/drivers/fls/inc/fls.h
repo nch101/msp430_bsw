@@ -17,10 +17,10 @@ typedef enum __attribute__((packed))
 
 typedef enum __attribute__((packed))
 {
-    FLS_IDLE,
-    FLS_PENDING,
-    FLS_PROCESSING,
-    FLS_ERROR,
+    FLS_IDLE,               /* No tasks are being done */
+    FLS_PENDING,            /* Task has been triggered. Waiting for processing */
+    FLS_PROCESSING,         /* Task is being processed */
+    FLS_ERROR,              /* Error has occured */
 } Fls_StatusType;
 
 typedef enum __attribute__((packed))

@@ -193,7 +193,10 @@ static void Fls_HandlingFlsReadJob(void)
 
 /**
  * @brief       Get current job status
- * @retval      Fls_StatusType
+ * @retval      FLS_IDLE                No tasks are being done
+ * @retval      FLS_PENDING             Task has been triggered. Waiting for processing
+ * @retval      FLS_PROCESSING          Task is being processed
+ * @retval      FLS_ERROR               Error has occured
  */
 Fls_StatusType Fls_GetStatus(void)
 {
@@ -203,7 +206,8 @@ Fls_StatusType Fls_GetStatus(void)
 /**
  * @brief       Erase one segment 
  * @param[in]   eSegmentName            Name of segment
- * @retval      STD_NOT_OK - Trigger not successful, STD_OK - Trigger successful
+ * @retval      STD_NOT_OK              Trigger not successful
+ * @retval      STD_OK                  Trigger successful
  */
 Std_StatusType Fls_Erase(Fls_SegmentType eSegmentName)
 {
@@ -224,7 +228,8 @@ Std_StatusType Fls_Erase(Fls_SegmentType eSegmentName)
  * @param[in]   eSegmentName            Name of segment
  * @param[in]   pSourceAddrPtr          Pointer to source data buffer
  * @param[in]   u8Length                Number of bytes to write
- * @retval      STD_NOT_OK - Trigger not successful, STD_OK - Trigger successful
+ * @retval      STD_NOT_OK              Trigger not successful
+ * @retval      STD_OK                  Trigger successful
  */
 Std_StatusType Fls_Write(const Fls_SegmentType eSegmentName, uint8 * const pSourceAddrPtr, const uint8 u8Length)
 {
@@ -258,7 +263,8 @@ Std_StatusType Fls_Write(const Fls_SegmentType eSegmentName, uint8 * const pSour
  * @param[in]   pSourceAddrPtr          Pointer to source data buffer
  * @param[out]  pTargetAddrPtr          Pointer to target data buffer
  * @param[in]   u8Length                Number of bytes to read
- * @retval      STD_NOT_OK - Trigger not successful, STD_OK - Trigger successful
+ * @retval      STD_NOT_OK              Trigger not successful
+ * @retval      STD_OK                  Trigger successful
  */
 Std_StatusType Fls_Read(const Fls_SegmentType eSegmentName, uint8 * const pSourceAddrPtr, const uint8 u8Length)
 {

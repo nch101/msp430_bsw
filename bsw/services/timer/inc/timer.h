@@ -7,6 +7,7 @@
 typedef enum __attribute__((packed))
 {
     TIMER_DEBOUNCE,
+    TIMER_MAX_TIMER_ID_PRESENT,
 } Timer_TimerID;
 
 typedef enum __attribute__((packed))
