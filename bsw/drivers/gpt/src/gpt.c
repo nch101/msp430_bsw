@@ -1,10 +1,13 @@
 #include "gpt.h"
 
+static void (*Gpt_vFuncCallback)(void);
+
 /**
  * @brief       GPT init function
+ * @param[in]   vFuncCallback       Pointer to function callback
  * @retval      None
  */
-void Gpt_InitFunction(void)
+void Gpt_InitFunction(void (*vFuncCallback)(void))
 {
     /* Configure Timer A counter */
     TA0CCR0 = GPT_CFG_TIMER_A_COUNT;
@@ -16,6 +19,12 @@ void Gpt_InitFunction(void)
                 | GPT_CFG_TIMER_A_MODE_REG  \
                 | ID_0  /* Divide by 1 */   \
                 ;
+
+    if (vFuncCallback != NULL)
+    {
+        Gpt_vFuncCallback = vFuncCallback;
+    }
+
 }
 
 /**
@@ -52,6 +61,5 @@ void __attribute__ ((interrupt(TIMER0_A0_VECTOR))) TimerA_ISR (void)
 #error Compiler not supported!
 #endif
 {
-    /* Call OS Timing Handling */
-    Os_ProcessTiming();
+    (*Gpt_vFuncCallback)();
 }

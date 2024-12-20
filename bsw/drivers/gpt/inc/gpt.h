@@ -6,6 +6,6 @@
 
 extern void Gpt_StartTimer(void);
 extern void Gpt_StopTimer(void);
-extern void Gpt_InitFunction(void);
+extern void Gpt_InitFunction(void (*vFuncCallback)(void));
 
 #endif /* GPT_H */
