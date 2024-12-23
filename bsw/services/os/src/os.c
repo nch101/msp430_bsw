@@ -161,9 +161,9 @@ static void Os_Task_100ms(void)
 
 void __attribute__((weak)) Os_InitApplicationTask(void)
 {
-    led10.u8Group    = 1U;
-    led10.u8Pin      = GPIO_PIN_0;
-    led10.eDirection = GPIO_OUTPUT;
+    led10.eGroup        = GPIO_GROUP_1;
+    led10.ePin          = GPIO_PIN_0;
+    led10.eDirection    = GPIO_OUTPUT;
 
     Gpio_ConfigPort(&led10);
 }
