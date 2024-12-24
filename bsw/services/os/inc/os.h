@@ -13,6 +13,7 @@
 #include "log.h"
 #include "nvm.h"
 #include "timer.h"
+#include "button.h"
 
 #define Os_MainFunction()                   int main(void)
 

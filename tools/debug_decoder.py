@@ -92,10 +92,12 @@ def main():
             nums = decode_message(ser.readline())
 
             now = datetime.datetime.now()
-            if (len(nums) == 4):
-                f.write("[%s] [%s][%s.c:%s][%s]\n" %(now.strftime("%Y-%m-%d %H:%M:%S:%f")[:-3], levels[nums[2]], modules[nums[3]].lower(), nums[1], messages[nums[0]]))
-            elif (len(nums) == 5):
-                f.write("[%s] [%s][%s.c:%s][%s][%s]\n" %(now.strftime("%Y-%m-%d %H:%M:%S:%f")[:-3], levels[nums[3]], modules[nums[4]].lower(), nums[2], messages[nums[1]], nums[0]))
+
+            if (nums != None):
+                if (len(nums) == 4):
+                    f.write("[%s] [%s][%s.c:%s][%s]\n" %(now.strftime("%Y-%m-%d %H:%M:%S:%f")[:-3], levels[nums[2]], modules[nums[3]].lower(), nums[1], messages[nums[0]]))
+                elif (len(nums) == 5):
+                    f.write("[%s] [%s][%s.c:%s][%s][%s]\n" %(now.strftime("%Y-%m-%d %H:%M:%S:%f")[:-3], levels[nums[3]], modules[nums[4]].lower(), nums[2], messages[nums[1]], nums[0]))
 
 
 main()

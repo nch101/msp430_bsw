@@ -61,16 +61,16 @@ void Gpio_ConfigPort(Gpio_GpioCfgType* const pGpioCfgPtr)
     {
         /* Working as an input pin */
         *(sRegisters.pDirRegPtr)    &= ~((uint8) pGpioCfgPtr->ePin);
+        /* Enable pull mode */
+        *(sRegisters.pResRegPtr)    |= (uint8) pGpioCfgPtr->ePin;
 
         /* Config pull mode */
         if ((pGpioCfgPtr->ePull) == GPIO_PULL_DOWN)
         {
-            *(sRegisters.pResRegPtr)    |= (uint8) pGpioCfgPtr->ePin;
             *(sRegisters.pOutputRegPtr) &= ~((uint8) pGpioCfgPtr->ePin);
         }
         else
         {
-            *(sRegisters.pResRegPtr)    |= (uint8) pGpioCfgPtr->ePin;
             *(sRegisters.pOutputRegPtr) |= (uint8) pGpioCfgPtr->ePin;
         }
     }
@@ -161,7 +161,14 @@ Gpio_LevelType Gpio_ReadPort(const Gpio_GpioCfgType* const pGpioCfgPtr)
 {
     Gpio_GpioRegType    sRegisters  = Gpio_sGroupRegs[pGpioCfgPtr->eGroup];
 
-    return (*(sRegisters.pInputRegPtr) & ((uint8) pGpioCfgPtr->ePin)) ? GPIO_HIGH : GPIO_LOW;
+    if (*(sRegisters.pInputRegPtr) & ((uint8) pGpioCfgPtr->ePin))
+    {
+        return GPIO_HIGH;
+    }
+    else
+    {
+        return GPIO_LOW;
+    }
 }
 
 /**

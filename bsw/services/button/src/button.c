@@ -30,15 +30,8 @@ static void Button_DebounceButton(const Button_ButtonID eButtonID, const Gpio_Le
         {
             if (Timer_GetTimerStatus(TIMER_DEBOUNCE) == TIMER_EXPIRED)
             {
-                if (eNewState != Button[eButtonID].stableState)
-                {
-                    Button[eButtonID].stableState    = eNewState;
-                    Button[eButtonID].status         = BUTTON_STABLE;
-                }
-                else
-                {
-                    DEBUG_WARN(BUTTON, DEBOUNCING_TIME_TOO_SHORT);
-                }
+                Button[eButtonID].stableState    = eNewState;
+                Button[eButtonID].status         = BUTTON_STABLE;
             }
 
             break;
@@ -64,8 +57,18 @@ void Button_ConfigButton( \
     Gpio_GpioCfgType* const pGpioPin, \
     const Gpio_LevelType eActiveState)
 {
-    Button[eButtonID].pGpioCfgPtr    = pGpioPin;
-    Button[eButtonID].activeState    = eActiveState;
+    Button[eButtonID].pGpioCfgPtr   = pGpioPin;
+    Button[eButtonID].activeState   = eActiveState;
+    Button[eButtonID].status        = BUTTON_STABLE;
+
+    if (eActiveState == GPIO_HIGH)
+    {
+        Button[eButtonID].stableState   = GPIO_LOW;
+    }
+    else
+    {
+        Button[eButtonID].stableState   = GPIO_HIGH;
+    }
 }
 
 /**

@@ -1,4 +1,3 @@
-#include <string.h>
 #include "uart.h"
 
 #if (BSW_CFG_UART_FUNCTION == STD_ENABLED)
@@ -108,7 +107,8 @@ Uart_StatusType Uart_GetTransmissionStatus(void)
  * @brief       Trigger data transmission. Data shall be transmit in Tx interrupt
  * @param[in]   pDataPtr        Pointer to buffer
  * @param[in]   u8DataLength    Length of data
- * @retval      STD_NOT_OK - Trigger not successful, STD_OK - Trigger successful
+ * @retval      STD_NOT_OK - Trigger not successful
+ * @retval      STD_OK - Trigger successful
  */
 Std_StatusType Uart_TransmitData(uint8 const * const pDataPtr, const uint8 u8DataLength)
 {
