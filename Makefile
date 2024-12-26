@@ -30,47 +30,47 @@ DEFINES         := $(addprefix -D, $(DEFINES_LIST))
 ############################ Source list ############################
 # C files list
 C_SOURCES_LIST  :=      \
-    bsw/drivers/fls/src/fls.c           \
-    bsw/drivers/gpio/src/gpio.c         \
-    bsw/drivers/gpt/src/gpt.c           \
-    bsw/drivers/mcu/src/mcu.c           \
-    bsw/drivers/uart/src/uart.c         \
-    bsw/drivers/wdt/src/wdt.c           \
-    bsw/services/button/src/button.c    \
-    bsw/services/debug/src/debug.c      \
-    bsw/services/log/src/log.c          \
-    bsw/services/nvm/src/nvm.c          \
-    bsw/services/os/src/os.c            \
-    bsw/services/timer/src/timer.c      \
+    bsw/drivers/fls/src/fls.c                   \
+    bsw/drivers/gpio/src/gpio.c                 \
+    bsw/drivers/gpt/src/gpt.c                   \
+    bsw/drivers/mcu/src/mcu.c                   \
+    bsw/drivers/uart/src/uart.c                 \
+    bsw/drivers/wdt/src/wdt.c                   \
+    bsw/services/debouncing/src/debouncing.c    \
+    bsw/services/debug/src/debug.c              \
+    bsw/services/log/src/log.c                  \
+    bsw/services/nvm/src/nvm.c                  \
+    bsw/services/os/src/os.c                    \
+    bsw/services/timer/src/timer.c              \
 
 ############################ Include list ############################
 # C include list
-C_INCLUDES_LIST :=          \
-    bsw/common              \
-    bsw/drivers/fls/inc     \
-    bsw/drivers/fls/cfg     \
-    bsw/drivers/gpio/inc    \
-    bsw/drivers/gpio/cfg    \
-    bsw/drivers/gpt/inc     \
-    bsw/drivers/gpt/cfg     \
-    bsw/drivers/mcu/inc     \
-    bsw/drivers/mcu/cfg     \
-    bsw/drivers/uart/inc    \
-    bsw/drivers/uart/cfg    \
-    bsw/drivers/wdt/inc     \
-    bsw/drivers/wdt/cfg     \
-    bsw/services/button/inc \
-    bsw/services/button/cfg \
-    bsw/services/debug/inc  \
-    bsw/services/debug/cfg  \
-    bsw/services/log/inc    \
-    bsw/services/log/cfg    \
-    bsw/services/nvm/inc    \
-    bsw/services/nvm/cfg    \
-    bsw/services/os/inc     \
-    bsw/services/os/cfg     \
-    bsw/services/timer/inc  \
-    bsw/services/timer/cfg  \
+C_INCLUDES_LIST :=              \
+    bsw/common                  \
+    bsw/drivers/fls/inc         \
+    bsw/drivers/fls/cfg         \
+    bsw/drivers/gpio/inc        \
+    bsw/drivers/gpio/cfg        \
+    bsw/drivers/gpt/inc         \
+    bsw/drivers/gpt/cfg         \
+    bsw/drivers/mcu/inc         \
+    bsw/drivers/mcu/cfg         \
+    bsw/drivers/uart/inc        \
+    bsw/drivers/uart/cfg        \
+    bsw/drivers/wdt/inc         \
+    bsw/drivers/wdt/cfg         \
+    bsw/services/debouncing/inc \
+    bsw/services/debouncing/cfg \
+    bsw/services/debug/inc      \
+    bsw/services/debug/cfg      \
+    bsw/services/log/inc        \
+    bsw/services/log/cfg        \
+    bsw/services/nvm/inc        \
+    bsw/services/nvm/cfg        \
+    bsw/services/os/inc         \
+    bsw/services/os/cfg         \
+    bsw/services/timer/inc      \
+    bsw/services/timer/cfg      \
 
 C_INCLUDES      := $(addprefix -I, $(C_INCLUDES_LIST))
 
