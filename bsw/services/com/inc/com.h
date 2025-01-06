@@ -8,7 +8,9 @@ typedef enum __attribute__((packed)) Com_SessionType
 {
     COM_DEFAULT_SESSION     = 0,
     COM_DIAGNOSTIC_SESSION,
+#if (BSW_CFG_DEBUG_FUNCTION == STD_ENABLED)
     COM_DEBUG_SESSION,
+#endif /* (BSW_CFG_DEBUG_FUNCTION == STD_ENABLED) */
     COM_MAX_SESSION_PRESENT,
 } Com_SessionType;
 
@@ -38,7 +40,7 @@ typedef struct Com_ServiceType
     Com_ServiceProcessorType    vSrvProcessor;          /* Processing service function */
 } Com_ServiceType;
 
-Std_StatusType Com_TransmitData(uint8 const * const pDataIn, uint16 const u16Len)
+Std_StatusType Com_TransmitData(uint8 const * const pDataIn, uint16 const u16Len);
 extern void Com_GetRxData(uint8** const pDataOut, uint8* const pDataLen);
 extern void Com_ExitCurrentRxSession(void);
 extern Std_StatusType Com_RegisterNewRxComSession(const Com_SessionType sSessionID, Com_ServiceType const * const sSessionProcessor);

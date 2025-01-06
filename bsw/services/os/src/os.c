@@ -95,10 +95,6 @@ static void Os_InitFunction(void)
         Com_InitFunction();
     #endif /* (BSW_CFG_COM_FUNCTION == STD_ENABLED) */
 
-    #if (BSW_CFG_DEBUG_FUNCTION == STD_ENABLED)
-        Debug_InitFunction();
-    #endif /* (BSW_CFG_DEBUG_FUNCTION == STD_ENABLED) */
-
     #if (BSW_CFG_GPIO_FUNCTION == STD_ENABLED)
         Gpio_InitFunction();
     #endif /* (BSW_CFG_GPIO_FUNCTION == STD_ENABLED) */
@@ -124,10 +120,6 @@ static void Os_BackgroundTask(void)
 #if (OS_CFG_TASK_1MS == STD_ENABLED)
 static void Os_Task_1ms(void)
 {
-#if (BSW_CFG_DEBUG_FUNCTION == STD_ENABLED)
-    Debug_MainFunction();
-#endif /* (BSW_CFG_DEBUG_FUNCTION == STD_ENABLED) */
-
 #if (BSW_CFG_COM_FUNCTION == STD_ENABLED)
     Com_MainFunction();
 #endif /* (BSW_CFG_COM_FUNCTION == STD_ENABLED) */

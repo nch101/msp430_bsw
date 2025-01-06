@@ -6,24 +6,16 @@
 
 #if (BSW_CFG_DEBUG_FUNCTION == STD_ENABLED)
 
-typedef struct
+typedef struct Debug_DebugMsgSt
 {
-    uint16              arg;
-    Debug_MessageID     msgID;
-    uint16              line;
-    Debug_LevelType     level;
-    Debug_ModuleName    module;
-    char                eol[2];
-    uint8               length;
+    uint16              u16Arg;
+    Debug_MessageID     eMsgID;
+    uint16              u16Line;
+    Debug_LevelType     eLevel;
+    Debug_ModuleName    eModule;
+    char                aEol[2];
+    uint8               u8Length;
 } Debug_DebugMsgSt;
-
-typedef enum __attribute__((packed))
-{
-    DEBUG_JOB_IDLE,
-    DEBUG_JOB_SENDING,
-} Debug_JobType;
-
-#define DEBUG_LIMIT_BUFFER_IDX(x, y)        x = (x >= y) ? 0 : x
 
 #if (DEBUG_CFG_LEVEL >= DEBUG_SEL_FATAL_LEVEL)
 #define DEBUG_FATAL(module, msg)                Debug_LogMessage(FATAL, module, __LINE__, msg, 0, FALSE)
@@ -59,9 +51,6 @@ typedef enum __attribute__((packed))
 
 extern void Debug_LogMessage(const Debug_LevelType eLevel, const Debug_ModuleName eModule, const uint16 u16Line, \
                                 const Debug_MessageID eMessage, const uint16 u16Num, const uint8 bIntArg);
-extern void Debug_MainFunction(void);
-extern void Debug_InitFunction(void);
-
 #else
 #define DEBUG_FATAL(module, msg)
 #define DEBUG_FATAL_U16_ARG(module, msg, arg)
