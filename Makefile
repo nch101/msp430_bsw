@@ -36,6 +36,7 @@ C_SOURCES_LIST  :=      \
     bsw/drivers/mcu/src/mcu.c                   \
     bsw/drivers/uart/src/uart.c                 \
     bsw/drivers/wdt/src/wdt.c                   \
+    bsw/services/com/src/com.c                  \
     bsw/services/debouncing/src/debouncing.c    \
     bsw/services/debug/src/debug.c              \
     bsw/services/log/src/log.c                  \
@@ -59,6 +60,8 @@ C_INCLUDES_LIST :=              \
     bsw/drivers/uart/cfg        \
     bsw/drivers/wdt/inc         \
     bsw/drivers/wdt/cfg         \
+    bsw/services/com/inc        \
+    bsw/services/com/cfg        \
     bsw/services/debouncing/inc \
     bsw/services/debouncing/cfg \
     bsw/services/debug/inc      \

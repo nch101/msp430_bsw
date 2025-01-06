@@ -7,6 +7,9 @@
 typedef enum __attribute__((packed))
 {
     TIMER_DEBOUNCE,
+    TIMER_RX_MSG_TIMEOUT,
+    TIMER_DIAGNOSTIC_SESSION,
+    TIMER_SECURE_SESSION,
     TIMER_MAX_TIMER_ID_PRESENT,
 } Timer_TimerID;
 

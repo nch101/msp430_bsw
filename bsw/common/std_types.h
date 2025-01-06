@@ -26,10 +26,16 @@ typedef signed short    sint16;
 typedef unsigned int    uint32;
 typedef signed int      sint32;
 
-typedef enum
+typedef enum __attribute__((packed)) Std_StatusType
 {
     STD_NOT_OK,
     STD_OK
 } Std_StatusType;
+
+typedef enum __attribute__((packed)) Std_BooleanType
+{
+    STD_FALSE,
+    STD_TRUE
+} Std_BooleanType;
 
 #endif /* STD_TYPES_H */

@@ -3,7 +3,6 @@
 #if (BSW_CFG_UART_FUNCTION == STD_ENABLED)
 #define ENABLE_TX_INTERRUPT()               IE2  |= UCA0TXIE
 #define DISABLE_TX_INTERRUPT()              IE2  &= ~UCA0TXIE
-#define IS_TX_BUFFER_READY()                ((IFG2 & UCA0TXIFG) == UCA0TXIFG)
 
 #define ENABLE_RX_INTERRUPT()               IE2  |= UCA0RXIE
 #define CLEAR_RX_INTERRUPT_FLAG()           IFG2 &= ~(UCA0RXIFG)
@@ -29,11 +28,8 @@ static void Uart_HandlingDataTransmission(void)
 {
     if (Uart_u16TxDataIdx < Uart_u16TxDataLength)
     {
-        if (IS_TX_BUFFER_READY())
-        {
-            UCA0TXBUF = Uart_pTxBufferPtr[Uart_u16TxDataIdx];
-            Uart_u16TxDataIdx++;
-        }
+        UCA0TXBUF = Uart_pTxBufferPtr[Uart_u16TxDataIdx];
+        Uart_u16TxDataIdx++;
     }
     else
     {

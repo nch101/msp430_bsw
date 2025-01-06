@@ -14,6 +14,7 @@
 #include "nvm.h"
 #include "timer.h"
 #include "debouncing.h"
+#include "com.h"
 
 #define Os_MainFunction()                   int main(void)
 

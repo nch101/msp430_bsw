@@ -46,13 +46,18 @@
 #define BSW_CFG_DEBOUNCING_FUNCTION         STD_DISABLED
 
 /**
+ * @brief Communication service enable
+ */
+#define BSW_CFG_COM_FUNCTION                STD_DISABLED
+
+/**
  * @brief Max number of project configurations
  */
 #define BSW_MAX_PROJECT_CONFIG              5U
 
 /**
- * @brief Max number of DTC codes
+ * @brief Max number of error codes
  */
-#define BSW_MAX_DTC_CODE                    5U
+#define BSW_MAX_ERROR_CODE                  5U
 
 #endif /* BSW_CFG_H */
