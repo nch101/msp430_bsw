@@ -12,7 +12,6 @@
 #include "debug.h"
 #include "log.h"
 #include "nvm.h"
-#include "timer.h"
 #include "debouncing.h"
 #include "com.h"
 

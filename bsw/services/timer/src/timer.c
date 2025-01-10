@@ -2,9 +2,19 @@
 #include "timer.h"
 
 #if (BSW_CFG_TIMER_FUNCTION == STD_ENABLED)
-
 static uint16 Timer_aTimeout[TIMER_MAX_TIMER_ID_PRESENT];
 static uint16 Timer_aTick[TIMER_MAX_TIMER_ID_PRESENT];
+static uint16 Timer_aStatus[TIMER_MAX_TIMER_ID_PRESENT];
+
+/**
+ * @brief       Stop timer
+ * @param[in]   eTimerID        TimerID
+ * @retval      None
+ */
+void Timer_StopTimer(const Timer_TimerID eTimerID)
+{
+    Timer_aStatus[eTimerID]  = TIMER_STOP;
+}
 
 /**
  * @brief       Set timer
@@ -16,39 +26,30 @@ void Timer_SetTimer(const Timer_TimerID eTimerID, const uint16 u16Timeout)
 {
     Timer_aTimeout[eTimerID] = u16Timeout;
     Timer_aTick[eTimerID]    = Os_GetSysTick();
+    Timer_aStatus[eTimerID]  = TIMER_RUNNING;
 }
 
 /**
  * @brief       Get timer status by ID
  * @param[in]   eTimerID        TimerID
- * @retval      TIMER_EXPIRED   Timer is expired
+ * @retval      TIMER_STOP      Timer is stop
  * @retval      TIMER_RUNNING   Timer is running
+ * @retval      TIMER_EXPIRED   Timer is expired
  */
 Timer_StatusType Timer_GetTimerStatus(const Timer_TimerID eTimerID)
 {
-    if (Os_GetSysTick() - Timer_aTick[eTimerID] >= Timer_aTimeout[eTimerID])
+    if (Timer_aStatus[eTimerID] != TIMER_STOP)
     {
-        return TIMER_EXPIRED;
+        if (Os_GetSysTick() - Timer_aTick[eTimerID] >= Timer_aTimeout[eTimerID])
+        {
+            Timer_aStatus[eTimerID] = TIMER_EXPIRED;
+        }
+        else
+        {
+            Timer_aStatus[eTimerID] = TIMER_RUNNING;
+        }
     }
-    else
-    {
-        return TIMER_RUNNING;
-    }
+
+    return Timer_aStatus[eTimerID];
 }
-
-/**
- * @brief       Timer initialize function
- * @retval      None
- */
-void Timer_InitFunction(void)
-{
-    uint8 u8Index;
-
-    for (u8Index = 0; u8Index < TIMER_MAX_TIMER_ID_PRESENT; u8Index++)
-    {
-        Timer_aTimeout[u8Index] = 0U;
-        Timer_aTick[u8Index]    = 0U;
-    }
-}
-
 #endif /* (BSW_CFG_TIMER_FUNCTION = STD_ENABLED) */

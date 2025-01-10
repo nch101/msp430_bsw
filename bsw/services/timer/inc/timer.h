@@ -15,13 +15,14 @@ typedef enum __attribute__((packed))
 
 typedef enum __attribute__((packed))
 {
+    TIMER_STOP,
     TIMER_RUNNING,
     TIMER_EXPIRED,
 } Timer_StatusType;
 
+extern void Timer_StopTimer(const Timer_TimerID eTimerID);
 extern void Timer_SetTimer(const Timer_TimerID eTimerID, const uint16 u16Timeout);
 extern Timer_StatusType Timer_GetTimerStatus(const Timer_TimerID eTimerID);
-extern void Timer_InitFunction(void);
 
 #endif /* (BSW_CFG_TIMER_FUNCTION = STD_ENABLED) */
 #endif /* TIMER_H */

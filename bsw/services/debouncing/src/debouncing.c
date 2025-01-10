@@ -34,6 +34,7 @@ static void Debounce_DebounceDevice(const Debounce_DeviceID eDeviceID, const Gpi
  */
 void Debounce_ConfigureDevice(const Debounce_DeviceID eDeviceID, Gpio_GpioCfgType* const pGpioPin)
 {
+    Gpio_ConfigPort(pGpioPin);
     Debounce_aDevices[eDeviceID].pGpioCfgPtr    = pGpioPin;
     Debounce_aDevices[eDeviceID].eOldState      = (pGpioPin->ePull == GPIO_PULL_UP) ? GPIO_HIGH : GPIO_LOW;
     Debounce_aDevices[eDeviceID].eStableState   = Debounce_aDevices[eDeviceID].eOldState;

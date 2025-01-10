@@ -71,10 +71,6 @@ static void Os_InitFunction(void)
     Gpt_InitFunction(&Os_ProcessTiming);
     Mcu_InitOperatingMode();
 
-    #if (BSW_CFG_TIMER_FUNCTION == STD_ENABLED)
-        Timer_InitFunction();
-    #endif /* (BSW_CFG_TIMER_FUNCTION = STD_ENABLED) */
-
     #if (BSW_CFG_FLS_FUNCTION == STD_ENABLED)
         Fls_InitFunction();
     #endif /* (BSW_CFG_FLS_FUNCTION == STD_ENABLED) */

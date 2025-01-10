@@ -7,7 +7,7 @@
 #if (BSW_CFG_DEBOUNCING_FUNCTION == STD_ENABLED)
 typedef enum __attribute__((packed)) Debounce_DeviceID
 {
-    DEBOUNCE_SWITCHING_MODE,
+    DEBOUNCE_DIAGNOSTIC_MODE,
     DEBOUNCE_MAX_DEVICE_ID_PRESENT,
 } Debounce_DeviceID;
 
