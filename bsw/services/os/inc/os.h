@@ -10,7 +10,6 @@
 #include "gpio.h"
 #include "wdt.h"
 #include "debug.h"
-#include "log.h"
 #include "nvm.h"
 #include "debouncing.h"
 #include "com.h"

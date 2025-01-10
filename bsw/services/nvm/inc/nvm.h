@@ -21,8 +21,8 @@ typedef enum __attribute__((packed))
 
 #define NVM_READING_FLASH_DATA()            while (Fls_GetStatus() != FLS_IDLE) { Fls_MainFunction(); }
 
-extern uint8 Nvm_GetDataById(Nvm_DataType eDataType, uint8 u8DataID);
-extern void Nvm_SetDataById(Nvm_DataType eDataType, uint8 u8DataID, uint8 *pDataPtr);
+extern uint8 Nvm_GetDataById(const Nvm_DataType eDataType, const uint8 u8DataID);
+extern void Nvm_SetDataById(const Nvm_DataType eDataType, const uint8 u8DataID, const uint8 u8DataIn);
 extern void Nvm_InitFunction(void);
 extern void Nvm_MainFunction(void);
 

@@ -4,7 +4,7 @@
 #if (BSW_CFG_NVM_FUNCTION == STD_ENABLED)
 
 static uint8 Nvm_aProjConfigMirror[BSW_MAX_PROJECT_CONFIG]  = { 0U };
-static uint8 Nvm_aDTCMirror[BSW_MAX_DTC_CODE]               = { 0U };
+static uint8 Nvm_aDTCMirror[BSW_MAX_ERROR_CODE]             = { 0U };
 
 static Nvm_DataType Nvm_eBlockDataDoing = NVM_NONE;
 static Nvm_JobType  Nvm_eJob;
@@ -19,7 +19,7 @@ static uint8        Nvm_bIsDTCChange    = FALSE;
  * @param[in]   eJob        Current job
  * @retval      None
  */
-static void Nvm_ChangeCurJobDoing(Nvm_JobType eJob)
+static void Nvm_ChangeCurJobDoing(const Nvm_JobType eJob)
 {
     Nvm_ePreJob = Nvm_eJob;
     Nvm_eJob    = eJob;
@@ -47,7 +47,7 @@ static void Nvm_ReadAllNvmBlock(void)
 
         case NVM_DTC_LOG:
         {
-            if (Fls_Read(NVM_CFG_DTC_LOG_SEGMENT, Nvm_aDTCMirror, BSW_MAX_DTC_CODE) == STD_OK)
+            if (Fls_Read(NVM_CFG_DTC_LOG_SEGMENT, Nvm_aDTCMirror, BSW_MAX_ERROR_CODE) == STD_OK)
             {
                 NVM_READING_FLASH_DATA();
 
@@ -87,7 +87,7 @@ static void Nvm_WriteNvmBlock(void)
     {
         eTargetSegment  = NVM_CFG_DTC_LOG_SEGMENT;
         pSourcePtr      = Nvm_aDTCMirror;
-        u8Length        = BSW_MAX_DTC_CODE;
+        u8Length        = BSW_MAX_ERROR_CODE;
     }
     else
     {
@@ -137,7 +137,7 @@ static void Nvm_EraseNvmBlock(void)
  * @param[in]   u8DataID    DataID
  * @retval      uint8
  */
-uint8 Nvm_GetDataById(Nvm_DataType eDataType, uint8 u8DataID)
+uint8 Nvm_GetDataById(const Nvm_DataType eDataType, const uint8 u8DataID)
 {
     if (Nvm_bIsDataReady == TRUE)
     {
@@ -155,27 +155,27 @@ uint8 Nvm_GetDataById(Nvm_DataType eDataType, uint8 u8DataID)
 }
 
 /**
- * @brief       Set data into RAM mirror by ID
+ * @brief       Stores the specified data value into the RAM mirror 
  * @param[in]   eDataType   Type of data
  * @param[in]   u8DataID    DataID
- * @param[in]   pDataPtr    Poiter to data
- * @retval      uint8
+ * @param[in]   u8DataIn    Data value
+ * @retval      None
  */
-void Nvm_SetDataById(Nvm_DataType eDataType, uint8 u8DataID, uint8 *pDataPtr)
+void Nvm_SetDataById(const Nvm_DataType eDataType, const uint8 u8DataID, const uint8 u8DataIn)
 {
     if (eDataType == NVM_PROJECT_DATA)
     {
-        if (Nvm_aProjConfigMirror[u8DataID] != *pDataPtr)
+        if (Nvm_aProjConfigMirror[u8DataID] != u8DataIn)
         {
-            Nvm_aProjConfigMirror[u8DataID] = *pDataPtr;
+            Nvm_aProjConfigMirror[u8DataID] = u8DataIn;
             Nvm_bIsPrjDatChange = TRUE;
         }
     }
     else if (eDataType == NVM_DTC_LOG)
     {
-        if (Nvm_aDTCMirror[u8DataID] != *pDataPtr)
+        if (Nvm_aDTCMirror[u8DataID] != u8DataIn)
         {
-            Nvm_aDTCMirror[u8DataID] = *pDataPtr;
+            Nvm_aDTCMirror[u8DataID] = u8DataIn;
             Nvm_bIsDTCChange = TRUE;
         }
     }

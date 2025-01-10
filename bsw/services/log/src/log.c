@@ -3,14 +3,13 @@
 
 #if (BSW_CFG_LOG_FUNCTION == STD_ENABLED)
 
-/* Current number of errors */
-static uint8 Log_u8NumErrors;
+#define LOG_GET_NUM_ERRORS()                    Nvm_GetDataById(NVM_DTC_LOG, LOG_NUM_ERRORS_ID)
 
-static uint8 Log_IsErrorCodePresent(Log_ErrorType eErrorId)
+static uint8 Log_IsErrorCodePresent(const Log_ErrorId eErrorId)
 {
-    uint8 u8Index;
+    uint8   u8NumErrors = LOG_GET_NUM_ERRORS();
 
-    for (u8Index = Log_u8NumErrors; u8Index > 0; u8Index--)
+    for (uint8 u8Index = u8NumErrors; u8Index > 0; u8Index--)
     {
         if (Nvm_GetDataById(NVM_DTC_LOG, u8Index) == eErrorId)
         {
@@ -21,26 +20,60 @@ static uint8 Log_IsErrorCodePresent(Log_ErrorType eErrorId)
     return FALSE;
 }
 
-void Log_LogErrorCode(Log_ErrorType eErrorId)
+/**
+ * @brief       Save error code to NvM
+ * @param[in]   eErrorId    Error code ID
+ * @retval      None
+ */
+void Log_LogErrorCode(const Log_ErrorId eErrorId)
 {
-    if ((Log_u8NumErrors == 0) \
-     || (( Log_u8NumErrors < BSW_MAX_DTC_CODE ) && ( Log_IsErrorCodePresent(eErrorId) == FALSE )))
+    uint8   u8NumErrors = LOG_GET_NUM_ERRORS();
+
+    if ((u8NumErrors < BSW_MAX_ERROR_CODE) \
+     && (Log_IsErrorCodePresent(eErrorId) == FALSE))
     {
         /* Increase number of errors */
-        Log_u8NumErrors++;
+        u8NumErrors++;
 
         /* Save ErrorId into flash */
-        Nvm_SetDataById(NVM_DTC_LOG, Log_u8NumErrors, &eErrorId);
+        Nvm_SetDataById(NVM_DTC_LOG, u8NumErrors, eErrorId);
 
         /* Save number of errors into flash */
-        Nvm_SetDataById(NVM_DTC_LOG, LOG_NUM_ERRORS_ID, &Log_u8NumErrors);
+        Nvm_SetDataById(NVM_DTC_LOG, LOG_NUM_ERRORS_ID, u8NumErrors);
     }
 }
 
-void Log_InitFunction(void)
+/**
+ * @brief       Get all error codes 
+ * @param[out]  pNumErrors  Pointer to variable holding error number
+ * @param[out]  pErrorOut   Pointer to buffer
+ * @retval      None
+ */
+void Log_ReadErrorCode(uint8 * const pNumErrors, uint8 * pErrorOut)
 {
-    /* Get current number of errors in flash */
-    Log_u8NumErrors = Nvm_GetDataById(NVM_DTC_LOG, LOG_NUM_ERRORS_ID);
+    *pNumErrors = LOG_GET_NUM_ERRORS();
+
+    for (uint8 u8Index = 0; u8Index < *pNumErrors; u8Index++)
+    {
+        pErrorOut[u8Index]  = Nvm_GetDataById(NVM_DTC_LOG, u8Index + 1U);
+    }
 }
 
+/**
+ * @brief       Clear all error codes in NvM
+ * @retval      None
+ */
+void Log_ClearErrorCode(void)
+{
+    uint8   u8NumErrors = LOG_GET_NUM_ERRORS();
+
+    for (uint8 u8Index = 1U; u8Index < u8NumErrors; u8Index++)
+    {
+        /* Save ErrorId into flash */
+        Nvm_SetDataById(NVM_DTC_LOG, u8Index, LOG_CFG_DEFAULT_LOG_VALUE);
+    }
+
+    /* Save number of errors into flash */
+    Nvm_SetDataById(NVM_DTC_LOG, LOG_NUM_ERRORS_ID, 0);
+}
 #endif /* (BSW_CFG_LOG_FUNCTION == STD_ENABLED) */
