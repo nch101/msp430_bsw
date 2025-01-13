@@ -1,0 +1,18 @@
+#ifndef DIAG_CFG_H
+#define DIAG_CFG_H
+
+#include "bsw_cfg.h"
+
+#if (BSW_CFG_DIAGNOSTIC_FUNCTION == STD_ENABLED)
+
+#define DIAG_CFG_ENTERING_DIAG_SESSION_TIMEOUT      5000U
+#define DIAG_CFG_SECURE_SESSION_TIMEOUT             10000U
+#define DIAG_CFG_DIAGNOSTIC_SESSION_TIMEOUT         30000U
+
+#define DIAG_CFG_MAX_SERVICES               9U
+#define DIAG_CFG_MAX_DATA_LEN               10U
+#define DIAG_CFG_MAX_NUMBER_OF_ATTEMPTS     5U
+
+
+#endif /* (BSW_CFG_DIAGNOSTIC_FUNCTION == STD_ENABLED) */
+#endif /* DIAG_CFG_H */

@@ -71,6 +71,10 @@ static void Os_InitFunction(void)
     Gpt_InitFunction(&Os_ProcessTiming);
     Mcu_InitOperatingMode();
 
+    #if (BSW_CFG_GPIO_FUNCTION == STD_ENABLED)
+        Gpio_InitFunction();
+    #endif /* (BSW_CFG_GPIO_FUNCTION == STD_ENABLED) */
+
     #if (BSW_CFG_FLS_FUNCTION == STD_ENABLED)
         Fls_InitFunction();
     #endif /* (BSW_CFG_FLS_FUNCTION == STD_ENABLED) */
@@ -87,9 +91,9 @@ static void Os_InitFunction(void)
         Com_InitFunction();
     #endif /* (BSW_CFG_COM_FUNCTION == STD_ENABLED) */
 
-    #if (BSW_CFG_GPIO_FUNCTION == STD_ENABLED)
-        Gpio_InitFunction();
-    #endif /* (BSW_CFG_GPIO_FUNCTION == STD_ENABLED) */
+    #if (BSW_CFG_DIAGNOSTIC_FUNCTION == STD_ENABLED)
+        Diag_InitFunction();
+    #endif /* (BSW_CFG_DIAGNOSTIC_FUNCTION == STD_ENABLED) */
 
     Wdt_StartWatchdogTimer();
 }

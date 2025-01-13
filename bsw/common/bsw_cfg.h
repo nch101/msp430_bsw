@@ -51,6 +51,11 @@
 #define BSW_CFG_COM_FUNCTION                STD_DISABLED
 
 /**
+ * @brief Diagnostic service enable
+ */
+#define BSW_CFG_DIAGNOSTIC_FUNCTION         STD_DISABLED
+
+/**
  * @brief Max number of project configurations
  */
 #define BSW_MAX_PROJECT_CONFIG              5U

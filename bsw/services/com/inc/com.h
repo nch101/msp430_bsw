@@ -1,5 +1,6 @@
 #ifndef COM_H
 #define COM_H
+#include "timer.h"
 #include "com_cfg.h"
 
 #if (BSW_CFG_COM_FUNCTION == STD_ENABLED)
@@ -7,7 +8,9 @@
 typedef enum __attribute__((packed)) Com_SessionType
 {
     COM_DEFAULT_SESSION     = 0,
+#if (BSW_CFG_DIAGNOSTIC_FUNCTION == STD_ENABLED)
     COM_DIAGNOSTIC_SESSION,
+#endif /* (BSW_CFG_DIAGNOSTIC_FUNCTION == STD_ENABLED) */
 #if (BSW_CFG_DEBUG_FUNCTION == STD_ENABLED)
     COM_DEBUG_SESSION,
 #endif /* (BSW_CFG_DEBUG_FUNCTION == STD_ENABLED) */
@@ -38,9 +41,11 @@ typedef struct Com_ServiceType
     Com_SwitchConditionChecker  eConditionChecker;      /* Session identification function */
     Com_RxDataChecker           eRxDataChecker;         /* Checking for valid Rx data function */
     Com_ServiceProcessorType    vSrvProcessor;          /* Processing service function */
+    uint16                      u16SessionTimeout;      /* Session timeout */
+    Timer_TimerID               eSessionTimerID;        /* Session timer ID */
 } Com_ServiceType;
 
-Std_StatusType Com_TransmitData(uint8 const * const pDataIn, uint16 const u16Len);
+extern Std_StatusType Com_TransmitData(uint8 const * const pDataIn, uint16 const u16Len);
 extern void Com_GetRxData(uint8** const pDataOut, uint8* const pDataLen);
 extern void Com_ExitCurrentRxSession(void);
 extern Std_StatusType Com_RegisterNewRxComSession(const Com_SessionType sSessionID, Com_ServiceType const * const sSessionProcessor);

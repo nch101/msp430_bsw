@@ -54,6 +54,30 @@ static void Com_SessionIdentifier(void)
     }
 }
 
+static void Com_SessionTimeoutChecker(void)
+{
+    Timer_StatusType    eTimerStatus;
+
+    if (Com_eCurrentSession != COM_DEFAULT_SESSION)
+    {
+        eTimerStatus = Timer_GetTimerStatus(Com_sComAttribute[Com_eCurrentSession].eSessionTimerID);
+
+        if (eTimerStatus == TIMER_STOP)
+        {
+            Timer_SetTimer(Com_sComAttribute[Com_eCurrentSession].eSessionTimerID, \
+                                Com_sComAttribute[Com_eCurrentSession].u16SessionTimeout);
+        }
+        else if (eTimerStatus == TIMER_EXPIRED)
+        {
+            Com_ExitCurrentRxSession();
+        }
+        else
+        {
+            /* Do nothing */
+        }
+    }
+}
+
 static void Com_ProcessRxData(void)
 {
     switch (Com_eCurrentRxState)
@@ -197,7 +221,7 @@ Std_StatusType Com_TransmitData(uint8 const * const pDataIn, uint16 const u16Len
 void Com_GetRxData(uint8** const pDataOut, uint8* const pDataLen)
 {
     *pDataOut   = Com_aRxBuffer;
-    *pDataLen   = Com_u8RxIndex;
+    *pDataLen   = Com_u8RxIndex + 1U;
 }
 
 /**
@@ -206,6 +230,9 @@ void Com_GetRxData(uint8** const pDataOut, uint8* const pDataLen)
  */
 void Com_ExitCurrentRxSession(void)
 {
+    Timer_StopTimer(Com_sComAttribute[Com_eCurrentSession].eSessionTimerID);
+
+    Com_u8RxIndex       = 0;
     Com_eCurrentRxState = COM_IDLE;
     Com_eCurrentSession = COM_DEFAULT_SESSION;
 }
@@ -237,6 +264,7 @@ Std_StatusType Com_RegisterNewRxComSession(const Com_SessionType sSessionID, Com
 void Com_MainFunction(void)
 {
     Com_SessionIdentifier();
+    Com_SessionTimeoutChecker();
     Com_ProcessRxData();
     Com_ProcessTxData();
 }

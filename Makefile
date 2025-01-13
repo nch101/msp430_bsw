@@ -39,6 +39,7 @@ C_SOURCES_LIST  :=      \
     bsw/services/com/src/com.c                  \
     bsw/services/debouncing/src/debouncing.c    \
     bsw/services/debug/src/debug.c              \
+    bsw/services/diag/src/diag.c                \
     bsw/services/log/src/log.c                  \
     bsw/services/nvm/src/nvm.c                  \
     bsw/services/os/src/os.c                    \
@@ -66,6 +67,8 @@ C_INCLUDES_LIST :=              \
     bsw/services/debouncing/cfg \
     bsw/services/debug/inc      \
     bsw/services/debug/cfg      \
+    bsw/services/diag/inc       \
+    bsw/services/diag/cfg       \
     bsw/services/log/inc        \
     bsw/services/log/cfg        \
     bsw/services/nvm/inc        \

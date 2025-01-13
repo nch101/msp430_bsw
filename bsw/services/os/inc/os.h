@@ -10,9 +10,10 @@
 #include "gpio.h"
 #include "wdt.h"
 #include "debug.h"
-#include "nvm.h"
 #include "debouncing.h"
+#include "diag.h"
 #include "com.h"
+#include "nvm.h"
 
 #define Os_MainFunction()                   int main(void)
 
