@@ -2,9 +2,14 @@
 #include "timer.h"
 
 #if (BSW_CFG_TIMER_FUNCTION == STD_ENABLED)
-static uint16 Timer_aTimeout[TIMER_MAX_TIMER_ID_PRESENT];
-static uint16 Timer_aTick[TIMER_MAX_TIMER_ID_PRESENT];
-static uint16 Timer_aStatus[TIMER_MAX_TIMER_ID_PRESENT];
+typedef struct Timer_t
+{
+    uint16              u16Timeout;
+    uint16              u16StartedTick;
+    Timer_StatusType    eStatus;
+} Timer_t;
+
+static Timer_t Timer[TIMER_MAX_TIMER_ID_PRESENT];
 
 /**
  * @brief       Stop timer
@@ -13,7 +18,7 @@ static uint16 Timer_aStatus[TIMER_MAX_TIMER_ID_PRESENT];
  */
 void Timer_StopTimer(const Timer_TimerID eTimerID)
 {
-    Timer_aStatus[eTimerID]  = TIMER_STOP;
+    Timer[eTimerID].eStatus = TIMER_STOP;
 }
 
 /**
@@ -24,9 +29,9 @@ void Timer_StopTimer(const Timer_TimerID eTimerID)
  */
 void Timer_SetTimer(const Timer_TimerID eTimerID, const uint16 u16Timeout)
 {
-    Timer_aTimeout[eTimerID] = u16Timeout;
-    Timer_aTick[eTimerID]    = Os_GetSysTick();
-    Timer_aStatus[eTimerID]  = TIMER_RUNNING;
+    Timer[eTimerID].u16Timeout      = u16Timeout;
+    Timer[eTimerID].u16StartedTick  = Os_GetSysTick();
+    Timer[eTimerID].eStatus         = TIMER_RUNNING;
 }
 
 /**
@@ -38,18 +43,24 @@ void Timer_SetTimer(const Timer_TimerID eTimerID, const uint16 u16Timeout)
  */
 Timer_StatusType Timer_GetTimerStatus(const Timer_TimerID eTimerID)
 {
-    if (Timer_aStatus[eTimerID] != TIMER_STOP)
+    if (Timer[eTimerID].eStatus != TIMER_STOP)
     {
-        if (Os_GetSysTick() - Timer_aTick[eTimerID] >= Timer_aTimeout[eTimerID])
+        if (Os_GetSysTick() >= Timer[eTimerID].u16StartedTick)
         {
-            Timer_aStatus[eTimerID] = TIMER_EXPIRED;
+            if (Os_GetSysTick() - Timer[eTimerID].u16StartedTick >= Timer[eTimerID].u16Timeout)
+            {
+                Timer[eTimerID].eStatus = TIMER_EXPIRED;
+            }
         }
         else
         {
-            Timer_aStatus[eTimerID] = TIMER_RUNNING;
+            if (Os_GetSysTick() - Timer[eTimerID].u16StartedTick >= Timer[eTimerID].u16Timeout)
+            {
+                Timer[eTimerID].eStatus = TIMER_EXPIRED;
+            }
         }
     }
 
-    return Timer_aStatus[eTimerID];
+    return Timer[eTimerID].eStatus;
 }
 #endif /* (BSW_CFG_TIMER_FUNCTION = STD_ENABLED) */
