@@ -41,6 +41,11 @@
 #define BSW_CFG_TIMER_FUNCTION              STD_DISABLED
 
 /**
+ * @brief Circular service enable
+ */
+#define BSW_CFG_CIRCULAR_FUNCTION           STD_DISABLED
+
+/**
  * @brief Debouncing service enable
  */
 #define BSW_CFG_DEBOUNCING_FUNCTION         STD_DISABLED
