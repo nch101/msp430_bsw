@@ -1,0 +1,26 @@
+name: Compilation CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      - name: Verify LFS files are present
+        run: |
+          tar -xvf tools/msp430-compiler.tar.bz2 -C tools/
+          ls -lh tools/msp430-compiler/bin/msp430-elf-gcc
+
+      - name: Compile project
+        run: make

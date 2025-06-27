@@ -6,7 +6,7 @@ TARGET_NAME     := msp430g2553
 DEVICE          := MSP430G2553
 
 # Compiler directory path
-GCC_DIR         := $(patsubst %/bin/msp430-elf-gcc,%,$(shell which msp430-elf-gcc))
+GCC_DIR         := tools/msp430-compiler
 
 # Compiler include directory path
 GCC_MSP_INC_DIR := $(GCC_DIR)/include/msp
@@ -18,11 +18,14 @@ GCC_STD_INC_DIR := $(GCC_DIR)/msp430-elf/include
 LD_DIR          := bsw/ld
 
 # Compiler
-CC              := msp430-elf-gcc
-GDB             := msp430-elf-gdb
-SIZE            := msp430-elf-size
-AR              := msp430-elf-ar
-LD              := msp430-elf-ld
+CC              := @$(GCC_DIR)/bin/msp430-elf-gcc
+GDB             := @$(GCC_DIR)/bin/msp430-elf-gdb
+SIZE            := @$(GCC_DIR)/bin/msp430-elf-size
+AR              := @$(GCC_DIR)/bin/msp430-elf-ar
+LD              := @$(GCC_DIR)/bin/msp430-elf-ld
+READ_ELF        := @$(GCC_DIR)/bin/msp430-elf-readelf
+OBJ_DUMP        := @$(GCC_DIR)/bin/msp430-elf-objdump
+OBJ_COPY        := @$(GCC_DIR)/bin/msp430-elf-objcopy
 
 ############################ Define list ############################
 # Define list
@@ -118,7 +121,7 @@ CFLAGS          := -Os -D__$(DEVICE)__ -mmcu=$(DEVICE) -g -ffunction-sections -f
 LDFLAGS         := -T$(LD_FILES) $(LIB_DIRS) $(LIB_FILES) -mmcu=$(DEVICE) -g -Wl,--gc-sections -Wl,-Map=build/$(TARGET_NAME).map
 
 ############################### Commands ###############################
-.PHONY: all clean build size debug
+.PHONY: all clean build info debug
 
 default:
 	@make all --no-print-directory
@@ -129,7 +132,7 @@ clean:
 all:
 	@make clean
 	@make build -j
-	@make size
+	@make info
 
 build: build/$(TARGET_NAME).elf
 
@@ -141,11 +144,11 @@ build/%.o: %.c
 build/$(TARGET_NAME).elf: $(C_OBJECTS)
 	@echo Linking objects and generating output binary ...
 	$(CC) $(LDFLAGS) $(C_OBJECTS) -o $@
-	msp430-elf-readelf -a $@ > build/$(TARGET_NAME)_reader.txt
-	msp430-elf-objdump -d $@ > build/$(TARGET_NAME)_objdump.txt
-	msp430-elf-objcopy -O srec $@ build/$(TARGET_NAME).srec
 
-size: build/$(TARGET_NAME).elf
+info: build/$(TARGET_NAME).elf
+	$(READ_ELF) -a $< > build/$(TARGET_NAME)_reader.info
+	$(OBJ_DUMP) -d $< > build/$(TARGET_NAME)_objdump.info
+	$(OBJ_COPY) -O srec $< build/$(TARGET_NAME).srec
 	$(SIZE) $<
 
 debug: build/$(TARGET_NAME).elf
