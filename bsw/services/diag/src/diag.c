@@ -2,7 +2,6 @@
 #include "debouncing.h"
 #include "timer.h"
 #include "nvm.h"
-#include "nvm_dictionary.h"
 #include "log.h"
 #include "com.h"
 #include "diag.h"

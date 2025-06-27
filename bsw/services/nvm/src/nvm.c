@@ -1,41 +1,43 @@
-#include "fls.h"
+#include <string.h>
 #include "nvm.h"
+#include "circular.h"
+#include "project_cfg.h"
 
 #if (BSW_CFG_NVM_FUNCTION == STD_ENABLED)
 
-static uint8 Nvm_aProjConfigMirror[BSW_MAX_PROJECT_CONFIG]  = { 0U };
-static uint8 Nvm_aErrCodeMirror[BSW_MAX_ERROR_CODE]         = { 0U };
+static Circular_t   Nvm_CircularBuff;
 
-static Nvm_DataType Nvm_eBlockDataDoing;
+static uint8        Nvm_aEventLogMirror[BSW_MAX_EVENT_LOG];
+static PrjCfgType_t Nvm_tPrjCfgMirror;
+
 static Nvm_JobType  Nvm_eJob;
-static Nvm_JobType  Nvm_ePreJob;
+static Nvm_DataType Nvm_eBlockDataDoing;
+static Nvm_JobType  Nvm_aQueueJob[NVM_CFG_QUEUE_JOB_SIZE];
 
-static uint8        Nvm_bIsPrjDatChange = FALSE;
-static uint8        Nvm_bIsDTCChange    = FALSE;
+static uint8        Nvm_bIsPrjDatChange;
+static uint8        Nvm_bIsEventLogChange;
 
-static const Nvm_BlockType  NvmBlocks[NVM_NUM_BLOCKS] = {
+const Nvm_DataBlockType Nvm_DataCfgLookupTable[NVM_MAX_DATA_CONFIG] =
+{
     {
-        Nvm_aProjConfigMirror,
+        &(Nvm_tPrjCfgMirror.item.dummy.value),
+        sizeof(uint8)
+    },
+};
+
+const Nvm_BlockType     Nvm_BlockInfo[NVM_NUM_BLOCK_TYPE] =
+{
+    {
+        (uint8 *) &Nvm_tPrjCfgMirror,
         NVM_CFG_PROJ_CONFIG_SEGMENT,
         BSW_MAX_PROJECT_CONFIG,
     },
     {
-        Nvm_aErrCodeMirror,
-        NVM_CFG_ERROR_CODE_SEGMENT,
-        BSW_MAX_ERROR_CODE,
+        (uint8 *) &Nvm_aEventLogMirror,
+        NVM_CFG_EVENT_LOG_SEGMENT,
+        BSW_MAX_EVENT_LOG,
     }
 };
-
-/**
- * @brief       Change Ongoing Job to current job
- * @param[in]   eJob        Current job
- * @retval      None
- */
-static void Nvm_ChangeCurJobDoing(const Nvm_JobType eJob)
-{
-    Nvm_ePreJob = Nvm_eJob;
-    Nvm_eJob    = eJob;
-}
 
 /**
  * @brief       Read all Nvm data segment then copy to RAM mirror
@@ -43,39 +45,11 @@ static void Nvm_ChangeCurJobDoing(const Nvm_JobType eJob)
  */
 static void Nvm_ReadAllNvmBlock(void)
 {
-    for (uint8 u8Index = 0; u8Index < NVM_NUM_BLOCKS; u8Index++)
+    for (uint8 u8Index = 0; u8Index < NVM_NUM_BLOCK_TYPE; u8Index++)
     {
-        Fls_Read(NvmBlocks[u8Index].eFlsSegment, NvmBlocks[u8Index].aRamMirror, NvmBlocks[u8Index].u8Len);
+        Fls_Read(Nvm_BlockInfo[u8Index].flsSegment, Nvm_BlockInfo[u8Index].RamMirrorDataAddr, Nvm_BlockInfo[u8Index].len);
 
         NVM_READING_FLASH_DATA();
-    }
-}
-
-/**
- * @brief       Write data from RAM mirror to NvM data segment
- * @retval      None
- */
-static void Nvm_WriteNvmBlock(void)
-{
-    Nvm_BlockType sCurBlockType = NvmBlocks[Nvm_eBlockDataDoing];
-
-    if (Fls_Write(sCurBlockType.eFlsSegment, sCurBlockType.aRamMirror, sCurBlockType.u8Len) == STD_OK)
-    {
-        /* Waiting for write done */
-        Nvm_ChangeCurJobDoing(NVM_JOB_WAITING);
-    }
-}
-
-/**
- * @brief       Erase NvM data segment
- * @retval      None
- */
-static void Nvm_EraseNvmBlock(void)
-{
-    if (Fls_Erase(NvmBlocks[Nvm_eBlockDataDoing].eFlsSegment) == STD_OK)
-    {
-        /* Waiting for erase done */
-        Nvm_ChangeCurJobDoing(NVM_JOB_WAITING);
     }
 }
 
@@ -83,20 +57,23 @@ static void Nvm_EraseNvmBlock(void)
  * @brief       Get data from RAM mirror by ID
  * @param[in]   eDataType   Type of data
  * @param[in]   u8DataID    DataID
- * @retval      uint8
+ * @param[out]  pDataOut    Pointer to storing variable
+ * @retval      None
  */
-uint8 Nvm_GetDataById(const Nvm_DataType eDataType, const uint8 u8DataID)
+void Nvm_GetDataById(const Nvm_DataType eDataType, const uint8 u8DataID, uint8 * pDataOut)
 {
     if (eDataType == NVM_PROJECT_DATA)
     {
-        return Nvm_aProjConfigMirror[u8DataID];
+        memcpy((void *) pDataOut, (void *) Nvm_DataCfgLookupTable[u8DataID].RamBlockDataAddr, Nvm_DataCfgLookupTable[u8DataID].len);
     }
-    else if (eDataType == NVM_DTC_LOG)
+    else if (eDataType == NVM_EVENT_LOG)
     {
-        return Nvm_aErrCodeMirror[u8DataID];
+        *pDataOut = Nvm_aEventLogMirror[u8DataID];
     }
-
-    return 0;
+    else
+    {
+        *pDataOut = 0xFFU;
+    }
 }
 
 /**
@@ -106,22 +83,22 @@ uint8 Nvm_GetDataById(const Nvm_DataType eDataType, const uint8 u8DataID)
  * @param[in]   u8DataIn    Data value
  * @retval      None
  */
-void Nvm_SetDataById(const Nvm_DataType eDataType, const uint8 u8DataID, const uint8 u8DataIn)
+void Nvm_SetDataById(const Nvm_DataType eDataType, const uint8 u8DataID, uint8 const * const pDataIn)
 {
     if (eDataType == NVM_PROJECT_DATA)
     {
-        if (Nvm_aProjConfigMirror[u8DataID] != u8DataIn)
+        if (*(Nvm_DataCfgLookupTable[u8DataID].RamBlockDataAddr) != *pDataIn)
         {
-            Nvm_aProjConfigMirror[u8DataID] = u8DataIn;
+            memcpy((void *) Nvm_DataCfgLookupTable[u8DataID].RamBlockDataAddr, (void *) pDataIn, Nvm_DataCfgLookupTable[u8DataID].len);
             Nvm_bIsPrjDatChange = TRUE;
         }
     }
-    else if (eDataType == NVM_DTC_LOG)
+    else if (eDataType == NVM_EVENT_LOG)
     {
-        if (Nvm_aErrCodeMirror[u8DataID] != u8DataIn)
+        if (Nvm_aEventLogMirror[u8DataID] != *pDataIn)
         {
-            Nvm_aErrCodeMirror[u8DataID] = u8DataIn;
-            Nvm_bIsDTCChange = TRUE;
+            Nvm_aEventLogMirror[u8DataID] = *pDataIn;
+            Nvm_bIsEventLogChange = TRUE;
         }
     }
 }
@@ -132,14 +109,13 @@ void Nvm_SetDataById(const Nvm_DataType eDataType, const uint8 u8DataID, const u
  */
 void Nvm_InitFunction(void)
 {
-    Nvm_bIsPrjDatChange = FALSE;
-    Nvm_bIsDTCChange    = FALSE;
-    Nvm_eBlockDataDoing = NVM_NOT_PRESENT;
-
-    Nvm_eJob            = NVM_JOB_NONE;
-    Nvm_ePreJob         = NVM_JOB_NONE;
-
+    Nvm_bIsPrjDatChange     = FALSE;
+    Nvm_bIsEventLogChange   = FALSE;
+    Nvm_eBlockDataDoing     = NVM_NOT_PRESENT;
+    Nvm_eJob                = NVM_JOB_NONE;
+    
     Nvm_ReadAllNvmBlock();
+    Circular_InitBuffer(&Nvm_CircularBuff, Nvm_aQueueJob, NVM_CFG_QUEUE_JOB_SIZE);
 }
 
 /**
@@ -150,37 +126,50 @@ void Nvm_MainFunction(void)
 {
     switch (Nvm_eJob)
     {
-        case NVM_JOB_WRITING:
+        case NVM_JOB_ERASE_REQUESTING:
         {
-            Nvm_WriteNvmBlock();
+            if (Fls_Erase(Nvm_BlockInfo[Nvm_eBlockDataDoing].flsSegment) == STD_OK)
+            {
+                /* Waiting for erase done */
+                Nvm_eJob = NVM_JOB_ERASING;
+            }
+
             break;
         }
 
         case NVM_JOB_ERASING:
         {
-            Nvm_EraseNvmBlock();
+            if (Fls_GetStatus() == FLS_IDLE)
+            {
+                /* Data segment is already erased. Ready to write */
+                Nvm_eJob = NVM_JOB_WRITE_REQUESTING;
+            }
+
             break;
         }
 
-        case NVM_JOB_WAITING:
+        case NVM_JOB_WRITE_REQUESTING:
+        {
+            if (Fls_Write(Nvm_BlockInfo[Nvm_eBlockDataDoing].flsSegment, 
+                Nvm_BlockInfo[Nvm_eBlockDataDoing].RamMirrorDataAddr, 
+                Nvm_BlockInfo[Nvm_eBlockDataDoing].len) == STD_OK)
+            {
+                /* Waiting for write done */
+                Nvm_eJob = NVM_JOB_WRITING;
+            }
+
+            break;
+        }
+
+        case NVM_JOB_WRITING:
         {
             if (Fls_GetStatus() == FLS_IDLE)
             {
-                if (Nvm_ePreJob == NVM_JOB_ERASING)
-                {
-                    /* Data segment is already erased. Ready to write */
-                    Nvm_ChangeCurJobDoing(NVM_JOB_WRITING);
-                }
-                else if (Nvm_ePreJob == NVM_JOB_WRITING)
-                {
-                    /* Data is written. No job is pending. Release writing job */
-                    Nvm_ChangeCurJobDoing(NVM_JOB_NONE);
-                    Nvm_eBlockDataDoing = NVM_NOT_PRESENT;
+                /* Data is written. No job is pending. Release writing job */
+                Nvm_eJob = NVM_JOB_NONE;
 
-                    /* Reset data change notification */
-                    Nvm_bIsDTCChange    = FALSE;
-                    Nvm_bIsPrjDatChange = FALSE;
-                }
+                /* Reset data change notification */
+                Nvm_eBlockDataDoing = NVM_NOT_PRESENT;
             }
 
             break;
@@ -188,20 +177,21 @@ void Nvm_MainFunction(void)
 
         case NVM_JOB_NONE:
         {
-            /* Only one type of data can be written to flash at a time */
-            if (Nvm_bIsDTCChange == TRUE)
+            if (Nvm_bIsEventLogChange == TRUE)
             {
-                Nvm_ChangeCurJobDoing(NVM_JOB_ERASING);
-                Nvm_eBlockDataDoing = NVM_DTC_LOG;
+                Nvm_bIsEventLogChange   = FALSE;
+                Circular_PushData(&Nvm_CircularBuff, NVM_EVENT_LOG);
             }
-            else if (Nvm_bIsPrjDatChange == TRUE)
+
+            if (Nvm_bIsPrjDatChange == TRUE)
             {
-                Nvm_ChangeCurJobDoing(NVM_JOB_ERASING);
-                Nvm_eBlockDataDoing = NVM_PROJECT_DATA;
+                Nvm_bIsPrjDatChange     = FALSE;
+                Circular_PushData(&Nvm_CircularBuff, NVM_PROJECT_DATA);
             }
-            else
+
+            if (Circular_PopData(&Nvm_CircularBuff, &Nvm_eBlockDataDoing) == STD_OK)
             {
-                /* Do nothing */
+                Nvm_eJob = NVM_JOB_ERASE_REQUESTING;
             }
 
             break;

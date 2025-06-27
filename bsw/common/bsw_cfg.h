@@ -8,12 +8,12 @@
 /**
  * @brief UART driver enable
  */
-#define BSW_CFG_UART_FUNCTION               STD_DISABLED
+#define BSW_CFG_UART_FUNCTION               STD_ENABLED
 
 /**
  * @brief Flash driver enable
  */
-#define BSW_CFG_FLS_FUNCTION                STD_DISABLED
+#define BSW_CFG_FLS_FUNCTION                STD_ENABLED
 
 /**
  * @brief GPIO driver enable
@@ -23,37 +23,37 @@
 /**
  * @brief NVM service enable
  */
-#define BSW_CFG_NVM_FUNCTION                STD_DISABLED
+#define BSW_CFG_NVM_FUNCTION                STD_ENABLED
 
 /**
  * @brief Debug service enable
  */
-#define BSW_CFG_DEBUG_FUNCTION              STD_DISABLED
+#define BSW_CFG_DEBUG_FUNCTION              STD_ENABLED
 
 /**
  * @brief Log service enable
  */
-#define BSW_CFG_LOG_FUNCTION                STD_DISABLED
+#define BSW_CFG_LOG_FUNCTION                STD_ENABLED
 
 /**
  * @brief Timer service enable
  */
-#define BSW_CFG_TIMER_FUNCTION              STD_DISABLED
+#define BSW_CFG_TIMER_FUNCTION              STD_ENABLED
 
 /**
  * @brief Circular service enable
  */
-#define BSW_CFG_CIRCULAR_FUNCTION           STD_DISABLED
+#define BSW_CFG_CIRCULAR_FUNCTION           STD_ENABLED
 
 /**
  * @brief Debouncing service enable
  */
-#define BSW_CFG_DEBOUNCING_FUNCTION         STD_DISABLED
+#define BSW_CFG_DEBOUNCING_FUNCTION         STD_ENABLED
 
 /**
  * @brief Communication service enable
  */
-#define BSW_CFG_COM_FUNCTION                STD_DISABLED
+#define BSW_CFG_COM_FUNCTION                STD_ENABLED
 
 /**
  * @brief Diagnostic service enable
@@ -66,8 +66,8 @@
 #define BSW_MAX_PROJECT_CONFIG              5U
 
 /**
- * @brief Max number of error codes
+ * @brief Max number of event log
  */
-#define BSW_MAX_ERROR_CODE                  5U
+#define BSW_MAX_EVENT_LOG                   5U
 
 #endif /* BSW_CFG_H */

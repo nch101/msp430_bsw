@@ -14,6 +14,9 @@ GCC_MSP_INC_DIR := $(GCC_DIR)/include/msp
 # Standard include directory path
 GCC_STD_INC_DIR := $(GCC_DIR)/msp430-elf/include
 
+# Linked file directory path
+LD_DIR          := bsw/ld
+
 # Compiler
 CC              := msp430-elf-gcc
 GDB             := msp430-elf-gdb
@@ -30,13 +33,14 @@ DEFINES         := $(addprefix -D, $(DEFINES_LIST))
 ############################ Source list ############################
 # C files list
 C_SOURCES_LIST  :=      \
+    bsw/config/src/project_cfg.c                \
+    bsw/lib/circular/src/circular.c             \
     bsw/drivers/fls/src/fls.c                   \
     bsw/drivers/gpio/src/gpio.c                 \
     bsw/drivers/gpt/src/gpt.c                   \
     bsw/drivers/mcu/src/mcu.c                   \
     bsw/drivers/uart/src/uart.c                 \
     bsw/drivers/wdt/src/wdt.c                   \
-    bsw/services/circular/src/circular.c        \
     bsw/services/com/src/com.c                  \
     bsw/services/debouncing/src/debouncing.c    \
     bsw/services/debug/src/debug.c              \
@@ -50,6 +54,9 @@ C_SOURCES_LIST  :=      \
 # C include list
 C_INCLUDES_LIST :=              \
     bsw/common                  \
+    bsw/config/inc              \
+    bsw/lib/circular/inc        \
+    bsw/lib/circular/cfg        \
     bsw/drivers/fls/inc         \
     bsw/drivers/fls/cfg         \
     bsw/drivers/gpio/inc        \
@@ -62,8 +69,6 @@ C_INCLUDES_LIST :=              \
     bsw/drivers/uart/cfg        \
     bsw/drivers/wdt/inc         \
     bsw/drivers/wdt/cfg         \
-    bsw/services/circular/inc   \
-    bsw/services/circular/cfg   \
     bsw/services/com/inc        \
     bsw/services/com/cfg        \
     bsw/services/debouncing/inc \
@@ -94,7 +99,7 @@ vpath %.c $(sort $(dir $(C_SOURCES_LIST)))
 
 ##################### Linked and libraries files #####################
 # Linked files
-LD_FILES        := $(GCC_MSP_INC_DIR)/$(shell echo $(DEVICE) | tr A-Z a-z).ld
+LD_FILES        := $(LD_DIR)/$(shell echo $(DEVICE) | tr A-Z a-z).ld
 
 # Libraries
 LIB_FILES       := 
@@ -126,19 +131,22 @@ all:
 	@make build -j
 	@make size
 
-build: build/$(TARGET_NAME).out
+build: build/$(TARGET_NAME).elf
 
 build/%.o: %.c
 	@mkdir -p build
 	@echo Compiling $< ...
 	$(CC) $(INCLUDES) $(CFLAGS) -c $< -o $@
 
-build/$(TARGET_NAME).out: $(C_OBJECTS)
+build/$(TARGET_NAME).elf: $(C_OBJECTS)
 	@echo Linking objects and generating output binary ...
 	$(CC) $(LDFLAGS) $(C_OBJECTS) -o $@
+	msp430-elf-readelf -a $@ > build/$(TARGET_NAME)_reader.txt
+	msp430-elf-objdump -d $@ > build/$(TARGET_NAME)_objdump.txt
+	msp430-elf-objcopy -O srec $@ build/$(TARGET_NAME).srec
 
-size: build/$(TARGET_NAME).out
+size: build/$(TARGET_NAME).elf
 	$(SIZE) $<
 
-debug: build/$(TARGET_NAME).out
+debug: build/$(TARGET_NAME).elf
 	$(GDB) $<

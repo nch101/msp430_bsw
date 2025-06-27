@@ -2,16 +2,18 @@
 #include "log.h"
 
 #if (BSW_CFG_LOG_FUNCTION == STD_ENABLED)
-
-#define LOG_GET_NUM_ERRORS()                    Nvm_GetDataById(NVM_DTC_LOG, LOG_NUM_ERRORS_ID)
-
 static uint8 Log_IsErrorCodePresent(const Log_ErrorId eErrorId)
 {
-    uint8   u8NumErrors = LOG_GET_NUM_ERRORS();
+    uint8   u8NumErrors;
+    uint8   u8ErrorID;
+
+    Nvm_GetDataById(NVM_EVENT_LOG, LOG_NUM_ERRORS_ID, &u8NumErrors);
 
     for (uint8 u8Index = u8NumErrors; u8Index > 0; u8Index--)
     {
-        if (Nvm_GetDataById(NVM_DTC_LOG, u8Index) == eErrorId)
+        Nvm_GetDataById(NVM_EVENT_LOG, u8Index, &u8ErrorID);
+
+        if (u8ErrorID == eErrorId)
         {
             return TRUE;
         }
@@ -27,19 +29,21 @@ static uint8 Log_IsErrorCodePresent(const Log_ErrorId eErrorId)
  */
 void Log_LogErrorCode(const Log_ErrorId eErrorId)
 {
-    uint8   u8NumErrors = LOG_GET_NUM_ERRORS();
+    uint8   u8NumErrors;
 
-    if ((u8NumErrors < BSW_MAX_ERROR_CODE) \
+    Nvm_GetDataById(NVM_EVENT_LOG, LOG_NUM_ERRORS_ID, &u8NumErrors);
+
+    if ((u8NumErrors < BSW_MAX_EVENT_LOG) \
      && (Log_IsErrorCodePresent(eErrorId) == FALSE))
     {
         /* Increase number of errors */
         u8NumErrors++;
 
         /* Save ErrorId into flash */
-        Nvm_SetDataById(NVM_DTC_LOG, u8NumErrors, eErrorId);
+        Nvm_SetDataById(NVM_EVENT_LOG, u8NumErrors, &eErrorId);
 
         /* Save number of errors into flash */
-        Nvm_SetDataById(NVM_DTC_LOG, LOG_NUM_ERRORS_ID, u8NumErrors);
+        Nvm_SetDataById(NVM_EVENT_LOG, LOG_NUM_ERRORS_ID, &u8NumErrors);
     }
 }
 
@@ -51,11 +55,11 @@ void Log_LogErrorCode(const Log_ErrorId eErrorId)
  */
 void Log_ReadErrorCode(uint8 * const pNumErrors, uint8 * pErrorOut)
 {
-    *pNumErrors = LOG_GET_NUM_ERRORS();
+    Nvm_GetDataById(NVM_EVENT_LOG, LOG_NUM_ERRORS_ID, pNumErrors);
 
     for (uint8 u8Index = 0; u8Index < *pNumErrors; u8Index++)
     {
-        pErrorOut[u8Index]  = Nvm_GetDataById(NVM_DTC_LOG, u8Index + 1U);
+        Nvm_GetDataById(NVM_EVENT_LOG, u8Index + 1U, &pErrorOut[u8Index]);
     }
 }
 
@@ -65,15 +69,20 @@ void Log_ReadErrorCode(uint8 * const pNumErrors, uint8 * pErrorOut)
  */
 void Log_ClearErrorCode(void)
 {
-    uint8   u8NumErrors = LOG_GET_NUM_ERRORS();
+    uint8   u8NumErrors;
+    uint8   u8DefaultData;
+
+    Nvm_GetDataById(NVM_EVENT_LOG, LOG_NUM_ERRORS_ID, &u8NumErrors);
 
     for (uint8 u8Index = 1U; u8Index < u8NumErrors; u8Index++)
     {
         /* Save ErrorId into flash */
-        Nvm_SetDataById(NVM_DTC_LOG, u8Index, LOG_CFG_DEFAULT_LOG_VALUE);
+        u8DefaultData = LOG_CFG_DEFAULT_LOG_VALUE;
+        Nvm_SetDataById(NVM_EVENT_LOG, u8Index, &u8DefaultData);
     }
 
     /* Save number of errors into flash */
-    Nvm_SetDataById(NVM_DTC_LOG, LOG_NUM_ERRORS_ID, 0);
+    u8DefaultData = 0;
+    Nvm_SetDataById(NVM_EVENT_LOG, LOG_NUM_ERRORS_ID, &u8DefaultData);
 }
 #endif /* (BSW_CFG_LOG_FUNCTION == STD_ENABLED) */
