@@ -16,7 +16,7 @@ void Debug_LogMessage( \
     /* Build debug message */
     Debug_aMsgBuffer.eLevel     = eLevel;
     Debug_aMsgBuffer.eModule    = eModule;
-    Debug_aMsgBuffer.eLevel     = u16Line;
+    Debug_aMsgBuffer.u16Line    = u16Line;
     Debug_aMsgBuffer.eMsgID     = eMessage;
     Debug_aMsgBuffer.aEol[0]    = '\r';
     Debug_aMsgBuffer.aEol[1]    = '\n';

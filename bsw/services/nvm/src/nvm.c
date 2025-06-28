@@ -29,13 +29,13 @@ const Nvm_BlockType     Nvm_BlockInfo[NVM_NUM_BLOCK_TYPE] =
 {
     {
         (uint8 *) &Nvm_tPrjCfgMirror,
-        NVM_CFG_PROJ_CONFIG_SEGMENT,
         BSW_MAX_PROJECT_CONFIG,
+        NVM_CFG_PROJ_CONFIG_SEGMENT,
     },
     {
         (uint8 *) &Nvm_aEventLogMirror,
-        NVM_CFG_EVENT_LOG_SEGMENT,
         BSW_MAX_EVENT_LOG,
+        NVM_CFG_EVENT_LOG_SEGMENT,
     }
 };
 
@@ -45,7 +45,9 @@ const Nvm_BlockType     Nvm_BlockInfo[NVM_NUM_BLOCK_TYPE] =
  */
 static void Nvm_ReadAllNvmBlock(void)
 {
-    for (uint8 u8Index = 0; u8Index < NVM_NUM_BLOCK_TYPE; u8Index++)
+    uint8 u8Index;
+
+    for (u8Index = 0; u8Index < NVM_NUM_BLOCK_TYPE; u8Index++)
     {
         Fls_Read(Nvm_BlockInfo[u8Index].flsSegment, Nvm_BlockInfo[u8Index].RamMirrorDataAddr, Nvm_BlockInfo[u8Index].len);
 

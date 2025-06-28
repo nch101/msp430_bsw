@@ -40,9 +40,11 @@ static void Com_ProcessDefaultComSession(void)
 
 static void Com_SessionIdentifier(void)
 {
+    uint8 u8Index;
+
     if (Com_eCurrentSession == COM_DEFAULT_SESSION)
     {
-        for (uint8 u8Index = 1U; u8Index < COM_MAX_SESSION_PRESENT; u8Index++)
+        for (u8Index = 1U; u8Index < COM_MAX_SESSION_PRESENT; u8Index++)
         {
             if ((Com_sComAttribute[u8Index].eConditionChecker != NULL) \
              && (Com_sComAttribute[u8Index].eConditionChecker() == STD_TRUE))
@@ -182,6 +184,7 @@ Std_StatusType Com_TransmitData(uint8 const * const pDataIn, uint16 const u16Len
 {
     uint16 copiedDataLen;
     uint16 remainingDataLen     = u16Len;
+    uint8  i;
 
     if ((Com_u8AvailTxBuff > 0) \
      && (remainingDataLen <= (Com_u8AvailTxBuff * COM_CFG_MAX_TX_DATA_LEN)))
@@ -193,7 +196,7 @@ Std_StatusType Com_TransmitData(uint8 const * const pDataIn, uint16 const u16Len
 
             Com_aTxBuffer[Com_u8TxBuffWriteIndex].u16Len = copiedDataLen;
 
-            for (uint8 i = 0; i < copiedDataLen; i++)
+            for (i = 0; i < copiedDataLen; i++)
             {
                 Com_aTxBuffer[Com_u8TxBuffWriteIndex].aData[i] = pDataIn[i];
             }

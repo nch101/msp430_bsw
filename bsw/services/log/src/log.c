@@ -6,10 +6,11 @@ static uint8 Log_IsErrorCodePresent(const Log_ErrorId eErrorId)
 {
     uint8   u8NumErrors;
     uint8   u8ErrorID;
+    uint8   u8Index;
 
     Nvm_GetDataById(NVM_EVENT_LOG, LOG_NUM_ERRORS_ID, &u8NumErrors);
 
-    for (uint8 u8Index = u8NumErrors; u8Index > 0; u8Index--)
+    for (u8Index = u8NumErrors; u8Index > 0; u8Index--)
     {
         Nvm_GetDataById(NVM_EVENT_LOG, u8Index, &u8ErrorID);
 
@@ -55,9 +56,11 @@ void Log_LogErrorCode(const Log_ErrorId eErrorId)
  */
 void Log_ReadErrorCode(uint8 * const pNumErrors, uint8 * pErrorOut)
 {
+    uint8 u8Index;
+
     Nvm_GetDataById(NVM_EVENT_LOG, LOG_NUM_ERRORS_ID, pNumErrors);
 
-    for (uint8 u8Index = 0; u8Index < *pNumErrors; u8Index++)
+    for (u8Index = 0; u8Index < *pNumErrors; u8Index++)
     {
         Nvm_GetDataById(NVM_EVENT_LOG, u8Index + 1U, &pErrorOut[u8Index]);
     }
@@ -71,10 +74,11 @@ void Log_ClearErrorCode(void)
 {
     uint8   u8NumErrors;
     uint8   u8DefaultData;
+    uint8   u8Index;
 
     Nvm_GetDataById(NVM_EVENT_LOG, LOG_NUM_ERRORS_ID, &u8NumErrors);
 
-    for (uint8 u8Index = 1U; u8Index < u8NumErrors; u8Index++)
+    for (u8Index = 1U; u8Index < u8NumErrors; u8Index++)
     {
         /* Save ErrorId into flash */
         u8DefaultData = LOG_CFG_DEFAULT_LOG_VALUE;
