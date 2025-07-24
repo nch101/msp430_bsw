@@ -126,6 +126,8 @@ void Nvm_InitFunction(void)
  */
 void Nvm_MainFunction(void)
 {
+    Nvm_DataType    eBlockDataChanged;
+
     switch (Nvm_eJob)
     {
         case NVM_JOB_ERASE_REQUESTING:
@@ -182,16 +184,18 @@ void Nvm_MainFunction(void)
             if (Nvm_bIsEventLogChange == TRUE)
             {
                 Nvm_bIsEventLogChange   = FALSE;
-                Circular_PushData(&Nvm_CircularBuff, NVM_EVENT_LOG);
+                eBlockDataChanged       = NVM_EVENT_LOG;
+                Circular_PushData(&Nvm_CircularBuff, &eBlockDataChanged, 1U);
             }
 
             if (Nvm_bIsPrjDatChange == TRUE)
             {
                 Nvm_bIsPrjDatChange     = FALSE;
-                Circular_PushData(&Nvm_CircularBuff, NVM_PROJECT_DATA);
+                eBlockDataChanged       = NVM_PROJECT_DATA;
+                Circular_PushData(&Nvm_CircularBuff, &eBlockDataChanged, 1U);
             }
 
-            if (Circular_PopData(&Nvm_CircularBuff, &Nvm_eBlockDataDoing) == STD_OK)
+            if (Circular_PopData(&Nvm_CircularBuff, 1U, &Nvm_eBlockDataDoing) == STD_OK)
             {
                 Nvm_eJob = NVM_JOB_ERASE_REQUESTING;
             }
