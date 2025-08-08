@@ -12,8 +12,8 @@ static void          (*Uart_pReceiveDataFnCallback)(volatile uint8 *);
 
 /* Tx information */
 static uint8 const * Uart_pTxBufferPtr;
-static uint16        Uart_u16TxDataLength;
-static uint16        Uart_u16TxDataIdx;
+static uint8         Uart_u8TxDataLength;
+static uint8         Uart_u8TxDataIdx;
 
 /* Transmission status */
 static Uart_StatusType  Uart_eTxStatus;
@@ -26,10 +26,10 @@ static Uart_StatusType  Uart_eTxStatus;
  */
 static void Uart_HandlingDataTransmission(void)
 {
-    if (Uart_u16TxDataIdx < Uart_u16TxDataLength)
+    if (Uart_u8TxDataIdx < Uart_u8TxDataLength)
     {
-        UCA0TXBUF = Uart_pTxBufferPtr[Uart_u16TxDataIdx];
-        Uart_u16TxDataIdx++;
+        UCA0TXBUF = Uart_pTxBufferPtr[Uart_u8TxDataIdx];
+        Uart_u8TxDataIdx++;
     }
     else
     {
@@ -112,8 +112,8 @@ Std_StatusType Uart_TransmitData(uint8 const * const pDataPtr, const uint8 u8Dat
     && (Uart_eTxStatus == UART_IDLE))
     {
         Uart_pTxBufferPtr    = pDataPtr;
-        Uart_u16TxDataLength = u8DataLength;
-        Uart_u16TxDataIdx    = 0U;
+        Uart_u8TxDataLength  = u8DataLength;
+        Uart_u8TxDataIdx     = 0U;
         Uart_eTxStatus       = UART_BUSY;
 
         ENABLE_TX_INTERRUPT();
@@ -147,8 +147,8 @@ void Uart_InitFunction(void)
     /* Initialize internal variables */
     Uart_pReceiveDataFnCallback = NULL;
     Uart_pTxBufferPtr           = NULL;
-    Uart_u16TxDataLength        = 0U;
-    Uart_u16TxDataIdx           = 0U;
+    Uart_u8TxDataLength         = 0U;
+    Uart_u8TxDataIdx            = 0U;
     Uart_eTxStatus              = UART_IDLE;
 }
 

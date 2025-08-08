@@ -51,14 +51,14 @@ def parse_dictionary_file(dictionary_file):
 def decode_message(rawData):
     decoded_message = []
 
-    if (len(rawData) == 8):
+    if (len(rawData) == 6):
         format_string   = "<HHBB"   # 2 uint16, 2 uint8
-    elif (len(rawData) == 10):
+    elif (len(rawData) == 8):
         format_string   = "<HHHBB"  # 3 uint16, 2 uint8
     else:
         return
 
-    unpacked_data   = struct.unpack(format_string, rawData[:-2])
+    unpacked_data   = struct.unpack(format_string, rawData)
 
     decoded_message = list(unpacked_data)
 
@@ -99,5 +99,5 @@ def main():
                 elif (len(nums) == 5):
                     f.write("[%s] [%s][%s.c:%s][%s][%s]\n" %(now.strftime("%Y-%m-%d %H:%M:%S:%f")[:-3], levels[nums[3]], modules[nums[4]].lower(), nums[2], messages[nums[1]], nums[0]))
 
-
-main()
+if __name__ == "__main__":
+    main()

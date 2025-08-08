@@ -13,7 +13,6 @@ typedef struct Debug_DebugMsgSt
     uint16              u16Line;
     Debug_LevelType     eLevel;
     Debug_ModuleName    eModule;
-    char                aEol[2];
     uint8               u8Length;
 } Debug_DebugMsgSt;
 

@@ -32,7 +32,7 @@ typedef void (*Com_ServiceProcessorType)(void);
 
 typedef struct Com_TxBufferType
 {
-    uint16  u16Len;
+    uint8   u8Len;
     uint8   aData[COM_CFG_MAX_TX_DATA_LEN];
 } Com_TxBufferType;
 
@@ -45,7 +45,7 @@ typedef struct Com_ServiceType
     Timer_TimerID               eSessionTimerID;        /* Session timer ID */
 } Com_ServiceType;
 
-extern Std_StatusType Com_TransmitData(uint8 const * const pDataIn, uint16 const u16Len);
+extern Std_StatusType Com_TransmitData(uint8 const * const pDataPtr, uint8 const u8DataLength);
 extern void Com_GetRxData(uint8** const pDataOut, uint8* const pDataLen);
 extern void Com_ExitCurrentRxSession(void);
 extern Std_StatusType Com_RegisterNewRxComSession(const Com_SessionType sSessionID, Com_ServiceType const * const sSessionProcessor);

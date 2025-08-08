@@ -18,15 +18,13 @@ void Debug_LogMessage( \
     Debug_aMsgBuffer.eModule    = eModule;
     Debug_aMsgBuffer.u16Line    = u16Line;
     Debug_aMsgBuffer.eMsgID     = eMessage;
-    Debug_aMsgBuffer.aEol[0]    = '\r';
-    Debug_aMsgBuffer.aEol[1]    = '\n';
-    Debug_aMsgBuffer.u8Length   = 8U;
+    Debug_aMsgBuffer.u8Length   = 6U;
 
     if (bIntArg == TRUE)
     {
         /* Build debug message with 1 uint16 argument */
         Debug_aMsgBuffer.u16Arg = u16Num;
-        Debug_aMsgBuffer.u8Length = 10U;
+        Debug_aMsgBuffer.u8Length = 8U;
     }
 
     (void) Com_TransmitData((uint8 *) &Debug_aMsgBuffer, Debug_aMsgBuffer.u8Length);

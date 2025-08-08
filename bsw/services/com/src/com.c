@@ -1,6 +1,7 @@
 #include "uart.h"
 #include "timer.h"
 #include "com.h"
+#include "circular.h"
 
 #if (BSW_CFG_COM_FUNCTION == STD_ENABLED)
 #define COM_CORRECT_INDEX(curIdx, maxIdx)       curIdx = (curIdx >= maxIdx) ? 0 : curIdx
@@ -144,7 +145,7 @@ static void Com_ProcessTxData(void)
             if (Com_u8AvailTxBuff < COM_CFG_MAX_TX_BUFF)
             {
                 (void) Uart_TransmitData(Com_aTxBuffer[Com_u8TxBuffReadIndex].aData, 
-                        Com_aTxBuffer[Com_u8TxBuffReadIndex].u16Len);
+                        Com_aTxBuffer[Com_u8TxBuffReadIndex].u8Len);
 
                 Com_eCurrentTxState   = COM_SENDING;
             }
@@ -180,10 +181,10 @@ static void Com_ProcessTxData(void)
  * @retval      STD_NOT_OK  - Trigger not successful. No Tx buffers available
  * @retval      STD_OK      - Trigger successful
  */
-Std_StatusType Com_TransmitData(uint8 const * const pDataIn, uint16 const u16Len)
+Std_StatusType Com_TransmitData(uint8 const * const pDataPtr, uint8 const u8DataLength)
 {
     uint16 copiedDataLen;
-    uint16 remainingDataLen     = u16Len;
+    uint16 remainingDataLen     = u8DataLength;
     uint8  i;
 
     if ((Com_u8AvailTxBuff > 0) \
@@ -194,11 +195,11 @@ Std_StatusType Com_TransmitData(uint8 const * const pDataIn, uint16 const u16Len
             copiedDataLen    = (remainingDataLen < COM_CFG_MAX_TX_DATA_LEN) ? remainingDataLen : COM_CFG_MAX_TX_DATA_LEN;
             remainingDataLen -= copiedDataLen;
 
-            Com_aTxBuffer[Com_u8TxBuffWriteIndex].u16Len = copiedDataLen;
+            Com_aTxBuffer[Com_u8TxBuffWriteIndex].u8Len = copiedDataLen;
 
             for (i = 0; i < copiedDataLen; i++)
             {
-                Com_aTxBuffer[Com_u8TxBuffWriteIndex].aData[i] = pDataIn[i];
+                Com_aTxBuffer[Com_u8TxBuffWriteIndex].aData[i] = pDataPtr[i];
             }
 
             Com_u8AvailTxBuff--;
